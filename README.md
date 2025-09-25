@@ -6,7 +6,7 @@ A modern web-based application for playing Magic: The Gathering online with frie
 
 - **Real-time Multiplayer**: Play with friends in real-time using WebSocket connections
 - **Drag & Drop Interface**: Intuitive card movement between different game zones
-- **Moxfield Integration**: Import decks directly from Moxfield (planned feature)
+- **Moxfield Integration**: ✅ Import decks directly from Moxfield with full validation and error handling
 - **Game Zones**: Full Magic gameplay zones including hand, library, graveyard, battlefield, and exile
 - **Chat System**: Built-in chat for communication during games
 - **Responsive Design**: Works on desktop and mobile devices
@@ -111,8 +111,7 @@ MTG-friends/
 │   ├── lib/              # Utilities and stores
 │   └── types/            # TypeScript type definitions
 ├── server.js             # Custom Next.js server with Socket.io
-├── public/               # Legacy files (kept for reference)
-└── server/               # Legacy server (kept for reference)
+└── public/               # Static assets (Next.js managed)
 ```
 
 ## 🔄 Migration from Legacy
@@ -122,15 +121,22 @@ This project has been migrated from vanilla JavaScript to a modern React/Next.js
 - **Before**: Vanilla JavaScript, Express server, plain HTML/CSS
 - **After**: Next.js with React, TypeScript, Tailwind CSS, Zustand state management
 
-### Legacy Commands (still available)
+### Migration Status: ✅ Complete
+- ✅ **Moxfield Integration**: Successfully migrated from legacy HTML form to Next.js components
+- ✅ **Real-time Multiplayer**: Socket.io integration maintained and enhanced
+- ✅ **Modern UI**: Replaced vanilla CSS with Tailwind + Mantine components
+- ✅ **Type Safety**: Full TypeScript implementation
+- ✅ **State Management**: Zustand replacing vanilla JavaScript state
+
+### Legacy Commands (deprecated)
 ```bash
-npm run legacy:dev    # Run old vanilla JS version
-npm run legacy:start  # Run old vanilla JS version in production
+npm run legacy:dev    # ⚠️ Legacy files removed - use npm run dev instead
+npm run legacy:start  # ⚠️ Legacy files removed - use npm start instead
 ```
 
 ## Future Features
 
-- [ ] Complete Moxfield API integration
+- [x] ~~Complete Moxfield API integration~~ ✅ **COMPLETED**
 - [ ] User accounts and authentication
 - [ ] Game state persistence
 - [ ] Advanced card search and filtering
