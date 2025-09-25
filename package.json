@@ -4,18 +4,45 @@
   "description": "A web-based TCG application for Magic: The Gathering with multiplayer support and Moxfield integration",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
+    "lint": "next lint",
+    "legacy:start": "node server/index.js",
+    "legacy:dev": "nodemon server/index.js"
   },
-  "keywords": ["mtg", "magic", "tcg", "multiplayer", "moxfield"],
+  "keywords": [
+    "mtg",
+    "magic",
+    "tcg",
+    "multiplayer",
+    "moxfield"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@types/socket.io": "^3.0.1",
+    "autoprefixer": "^10.4.21",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.4",
     "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "next": "^15.5.4",
+    "postcss": "^8.5.6",
+    "react": "^19.1.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^19.1.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

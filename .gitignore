@@ -4,6 +4,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Next.js
+.next/
+out/
+
+# Production
+/build
+build/Release
+
 # Runtime data
 pids
 *.pid
@@ -12,9 +20,6 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage/
-
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
 
 # Dependency directories
 jspm_packages/
@@ -56,6 +61,10 @@ Thumbs.db
 # Logs
 logs
 *.log
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Temporary files
 /tmp
