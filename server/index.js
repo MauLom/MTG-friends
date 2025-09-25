@@ -88,10 +88,21 @@ io.on('connection', (socket) => {
   socket.on('import-deck', async (data) => {
     const { roomId, deckUrl } = data;
     try {
-      // This will be implemented with Moxfield API integration
       const deck = await importDeckFromMoxfield(deckUrl);
+      
+      // Store the deck for the player
+      const room = gameRooms.get(roomId);
+      if (room) {
+        const player = room.players.find(p => p.socketId === socket.id);
+        if (player) {
+          player.deck = deck;
+          console.log(`Deck "${deck.name}" imported for player ${player.name} in room ${roomId}`);
+        }
+      }
+      
       socket.emit('deck-imported', { deck });
     } catch (error) {
+      console.error('Deck import error:', error);
       socket.emit('deck-import-error', { error: error.message });
     }
   });
@@ -136,16 +147,59 @@ app.get('/api/rooms', (req, res) => {
   res.json(rooms);
 });
 
-// Moxfield integration (placeholder)
+// Moxfield integration
+const MoxfieldApi = require('moxfield-api').default;
+const moxfield = new MoxfieldApi();
+
 async function importDeckFromMoxfield(deckUrl) {
-  // TODO: Implement actual Moxfield API integration
-  return {
-    name: "Sample Deck",
-    cards: [
-      { name: "Lightning Bolt", quantity: 4 },
-      { name: "Mountain", quantity: 20 }
-    ]
-  };
+  try {
+    // Extract deck ID from URL
+    const deckId = extractDeckIdFromUrl(deckUrl);
+    if (!deckId) {
+      throw new Error('Invalid Moxfield deck URL');
+    }
+    
+    // Fetch deck from Moxfield API
+    const deckData = await moxfield.deckList.findById(deckId);
+    
+    // Transform the deck data to our format
+    const cards = [];
+    
+    // Add mainboard cards
+    if (deckData.mainboard) {
+      for (const [cardId, cardInfo] of Object.entries(deckData.mainboard)) {
+        cards.push({
+          name: cardInfo.card.name,
+          quantity: cardInfo.quantity
+        });
+      }
+    }
+    
+    return {
+      name: deckData.name || "Imported Deck",
+      cards: cards
+    };
+  } catch (error) {
+    console.error('Error importing deck from Moxfield:', error);
+    throw new Error(`Failed to import deck: ${error.message}`);
+  }
+}
+
+function extractDeckIdFromUrl(url) {
+  // Handle various Moxfield URL formats
+  const patterns = [
+    /moxfield\.com\/decks\/([a-zA-Z0-9_-]+)/,  // Standard format
+    /moxfield\.com\/decks\/([a-zA-Z0-9_-]+)\//  // With trailing slash
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  
+  return null;
 }
 
 // Serve the main page

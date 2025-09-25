@@ -39,6 +39,12 @@ class MTGFriendsApp {
             this.updateGameUI();
             this.showScreen('game');
             this.showStatus(`Joined room ${data.roomId}`, 'success');
+            
+            // Automatically import the deck after joining
+            if (this.pendingDeckUrl) {
+                this.importDeckAfterJoin(this.pendingDeckUrl);
+                this.pendingDeckUrl = null;
+            }
         });
 
         this.socket.on('player-joined', (data) => {
@@ -71,10 +77,6 @@ class MTGFriendsApp {
         // Connection screen
         document.getElementById('join-game').addEventListener('click', () => {
             this.joinGame();
-        });
-
-        document.getElementById('import-deck').addEventListener('click', () => {
-            this.importDeck();
         });
 
         // Game controls
@@ -159,14 +161,34 @@ class MTGFriendsApp {
     joinGame() {
         const playerName = document.getElementById('player-name').value.trim();
         const roomId = document.getElementById('room-id').value.trim() || this.generateRoomId();
+        const deckUrl = document.getElementById('moxfield-url').value.trim();
 
         if (!playerName) {
             this.showStatus('Please enter your name', 'error');
             return;
         }
 
+        if (!deckUrl) {
+            this.showStatus('Please enter a Moxfield deck URL', 'error');
+            return;
+        }
+
+        // Validate the deck URL format
+        if (!this.isValidMoxfieldUrl(deckUrl)) {
+            this.showStatus('Please enter a valid Moxfield deck URL', 'error');
+            return;
+        }
+
         this.playerName = playerName;
+        this.pendingDeckUrl = deckUrl; // Store for import after joining
         this.socket.emit('join-room', roomId, playerName);
+    }
+
+    isValidMoxfieldUrl(url) {
+        const patterns = [
+            /^https?:\/\/(www\.)?moxfield\.com\/decks\/[a-zA-Z0-9_-]+\/?$/
+        ];
+        return patterns.some(pattern => pattern.test(url));
     }
 
     importDeck() {
@@ -182,6 +204,14 @@ class MTGFriendsApp {
             return;
         }
 
+        this.socket.emit('import-deck', {
+            roomId: this.currentRoom,
+            deckUrl: deckUrl
+        });
+    }
+
+    importDeckAfterJoin(deckUrl) {
+        this.showStatus('Importing your deck...', 'info');
         this.socket.emit('import-deck', {
             roomId: this.currentRoom,
             deckUrl: deckUrl
