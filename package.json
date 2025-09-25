@@ -21,6 +21,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mantine/core": "^8.3.2",
+    "@mantine/form": "^8.3.2",
+    "@mantine/hooks": "^8.3.2",
+    "@mantine/notifications": "^8.3.2",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",

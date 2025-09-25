@@ -1,27 +1,41 @@
 'use client';
 
 import React from 'react';
+import { Button as MantineButton } from '@mantine/core';
 import { cn } from '@/lib/utils';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  disabled?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
   children: React.ReactNode;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
 }
 
-const buttonVariants = {
-  primary: 'bg-gradient-to-r from-primary-500 to-secondary-600 text-white hover:from-primary-600 hover:to-secondary-700 shadow-lg hover:shadow-primary-500/25',
-  secondary: 'bg-glass-medium border border-white/30 text-white hover:bg-glass-light backdrop-blur-sm',
-  danger: 'bg-gradient-to-r from-error-500 to-error-600 text-white hover:from-error-600 hover:to-error-700 shadow-lg hover:shadow-error-500/25',
-  success: 'bg-gradient-to-r from-success-500 to-success-600 text-white hover:from-success-600 hover:to-success-700 shadow-lg hover:shadow-success-500/25',
-  ghost: 'text-white hover:bg-white/10 border border-transparent hover:border-white/20',
+const variantMap = {
+  primary: 'filled' as const,
+  secondary: 'light' as const,
+  danger: 'filled' as const,
+  success: 'filled' as const,
+  ghost: 'subtle' as const,
 };
 
-const buttonSizes = {
-  sm: 'px-3 py-1.5 text-sm font-medium rounded-md',
-  md: 'px-4 py-2 text-base font-medium rounded-lg',
-  lg: 'px-6 py-3 text-lg font-medium rounded-xl',
+const colorMap = {
+  primary: 'primary',
+  secondary: 'secondary',
+  danger: 'red',
+  success: 'green',
+  ghost: 'gray',
+};
+
+const sizeMap = {
+  sm: 'sm' as const,
+  md: 'md' as const,
+  lg: 'lg' as const,
 };
 
 export default function Button({
@@ -30,52 +44,82 @@ export default function Button({
   isLoading = false,
   disabled,
   className,
+  style,
   children,
-  ...props
+  onClick,
+  type = 'button',
 }: ButtonProps) {
   const isDisabled = disabled || isLoading;
+  
+  // Create custom style for gradient variants
+  const customStyle = React.useMemo(() => {
+    const baseStyle = style || {};
+    
+    if (variant === 'primary') {
+      return {
+        ...baseStyle,
+        background: 'linear-gradient(45deg, var(--mantine-color-primary-6), var(--mantine-color-secondary-6))',
+        backgroundSize: '200% 200%',
+        transition: 'all 300ms ease',
+        '&:hover:not(:disabled)': {
+          backgroundPosition: '100% 0',
+          transform: 'scale(1.05)',
+        },
+        '&:active:not(:disabled)': {
+          transform: 'scale(0.95)',
+        },
+      };
+    }
+    
+    if (variant === 'danger') {
+      return {
+        ...baseStyle,
+        background: 'linear-gradient(45deg, #ef4444, #dc2626)',
+        '&:hover:not(:disabled)': {
+          background: 'linear-gradient(45deg, #dc2626, #b91c1c)',
+          transform: 'scale(1.05)',
+        },
+        '&:active:not(:disabled)': {
+          transform: 'scale(0.95)',
+        },
+      };
+    }
+    
+    if (variant === 'success') {
+      return {
+        ...baseStyle,
+        background: 'linear-gradient(45deg, #10b981, #059669)',
+        '&:hover:not(:disabled)': {
+          background: 'linear-gradient(45deg, #059669, #047857)',
+          transform: 'scale(1.05)',
+        },
+        '&:active:not(:disabled)': {
+          transform: 'scale(0.95)',
+        },
+      };
+    }
+    
+    return baseStyle;
+  }, [style, variant]);
 
   return (
-    <button
+    <MantineButton
+      variant={variantMap[variant]}
+      color={colorMap[variant]}
+      size={sizeMap[size]}
+      loading={isLoading}
+      disabled={isDisabled}
+      type={type}
+      onClick={onClick}
       className={cn(
-        // Base styles
-        'inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-2 focus:ring-offset-transparent',
-        // Variant styles
-        buttonVariants[variant],
-        // Size styles
-        buttonSizes[size],
-        // Interactive states
-        'hover:scale-105 active:scale-95',
-        // Disabled state
-        isDisabled && 'opacity-50 cursor-not-allowed hover:scale-100 active:scale-100',
+        'transition-all duration-300',
+        variant === 'secondary' && 'backdrop-blur-sm border border-white/30',
+        variant === 'ghost' && 'border border-transparent hover:border-white/20',
         className
       )}
-      disabled={isDisabled}
-      {...props}
+      style={customStyle}
     >
-      {isLoading && (
-        <svg
-          className="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-      )}
       {children}
-    </button>
+    </MantineButton>
   );
 }

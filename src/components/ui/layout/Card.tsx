@@ -1,49 +1,72 @@
 'use client';
 
 import React from 'react';
+import { Paper, PaperProps } from '@mantine/core';
 import { cn } from '@/lib/utils';
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends Omit<PaperProps, 'padding'> {
   variant?: 'default' | 'glass' | 'solid';
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
 }
 
-const cardVariants = {
-  default: 'bg-white/5 border border-white/10 backdrop-blur-sm',
-  glass: 'bg-glass-light border border-white/20 backdrop-blur-lg',
-  solid: 'bg-gray-800 border border-gray-700',
-};
-
-const cardPadding = {
-  none: '',
-  sm: 'p-3',
-  md: 'p-4',
-  lg: 'p-6',
-  xl: 'p-8',
+const paddingMap = {
+  none: 0,
+  sm: 'xs',
+  md: 'md',
+  lg: 'lg',
+  xl: 'xl',
 };
 
 export default function Card({
   variant = 'glass',
   padding = 'md',
   className,
+  style,
   children,
   ...props
 }: CardProps) {
+  const customStyle = React.useMemo(() => {
+    const baseStyle = style || {};
+    
+    if (variant === 'glass') {
+      return {
+        ...baseStyle,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(15px)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+      };
+    }
+    
+    if (variant === 'default') {
+      return {
+        ...baseStyle,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+      };
+    }
+    
+    if (variant === 'solid') {
+      return {
+        ...baseStyle,
+        backgroundColor: 'var(--mantine-color-dark-8)',
+        border: '1px solid var(--mantine-color-dark-4)',
+      };
+    }
+    
+    return baseStyle;
+  }, [style, variant]);
+
   return (
-    <div
-      className={cn(
-        // Base styles
-        'rounded-xl transition-all duration-300',
-        // Variant styles
-        cardVariants[variant],
-        // Padding styles
-        cardPadding[padding],
-        className
-      )}
+    <Paper
+      p={paddingMap[padding]}
+      radius="xl"
+      className={cn('transition-all duration-300', className)}
+      style={customStyle}
       {...props}
     >
       {children}
-    </div>
+    </Paper>
   );
 }
