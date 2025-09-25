@@ -86,7 +86,8 @@ npm start
 ## 🛠 Technology Stack
 
 - **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS with custom animations
+- **UI Framework**: Mantine 7 for modern component library and styling system
+- **Styling**: Tailwind CSS with custom animations + Mantine theming
 - **State Management**: Zustand for efficient state handling
 - **Drag & Drop**: React DnD for smooth card interactions
 - **Backend**: Custom Node.js server with Next.js

@@ -24,16 +24,16 @@ export default function Input({
   variant = 'glass',
   size = 'md',
   className,
-  style,
+  styles,
   ...props
 }: InputProps) {
-  const customStyle = React.useMemo(() => {
-    const baseStyle = style || {};
+  const customStyles = React.useMemo(() => {
+    const baseStyles = styles || {};
     
     if (variant === 'glass') {
       return {
-        ...baseStyle,
-        '& .mantine-TextInput-input': {
+        ...baseStyles,
+        input: {
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -46,15 +46,21 @@ export default function Input({
             borderColor: 'var(--mantine-color-primary-4)',
           },
         },
-        '& .mantine-TextInput-label': {
+        label: {
           color: 'rgba(255, 255, 255, 0.9)',
+        },
+        description: {
+          color: 'rgba(255, 255, 255, 0.6)',
+        },
+        error: {
+          color: '#f87171',
         },
       };
     }
     
     return {
-      ...baseStyle,
-      '& .mantine-TextInput-input': {
+      ...baseStyles,
+      input: {
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.3)',
         color: 'white',
@@ -65,11 +71,17 @@ export default function Input({
           borderColor: 'var(--mantine-color-primary-4)',
         },
       },
-      '& .mantine-TextInput-label': {
+      label: {
         color: 'rgba(255, 255, 255, 0.9)',
       },
+      description: {
+        color: 'rgba(255, 255, 255, 0.6)',
+      },
+      error: {
+        color: '#f87171',
+      },
     };
-  }, [style, variant]);
+  }, [styles, variant]);
 
   return (
     <TextInput
@@ -78,7 +90,7 @@ export default function Input({
       description={helperText}
       size={sizeMap[size]}
       className={cn(className)}
-      style={customStyle}
+      styles={customStyles}
       {...props}
     />
   );
