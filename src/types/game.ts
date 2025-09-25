@@ -11,6 +11,17 @@ export interface Player {
   library: Card[];
   graveyard: Card[];
   battlefield: Card[];
+  deck?: Deck;
+}
+
+export interface Deck {
+  name: string;
+  cards: DeckCard[];
+}
+
+export interface DeckCard {
+  name: string;
+  quantity: number;
 }
 
 export interface GameState {
@@ -44,6 +55,7 @@ export interface SocketEvents {
   'join-room': (roomId: string, playerName: string) => void;
   'move-card': (data: CardMovement & { roomId: string }) => void;
   'send-chat': (roomId: string, message: string) => void;
+  'import-deck': (data: { roomId: string; deckUrl: string }) => void;
   
   // Server to Client
   'room-joined': (data: { roomId: string; players: Pick<Player, 'name' | 'socketId'>[]; gameState: GameState }) => void;
@@ -51,6 +63,8 @@ export interface SocketEvents {
   'player-left': (data: { name: string; socketId: string }) => void;
   'card-moved': (data: CardMovement) => void;
   'chat-message': (data: { playerName: string; message: string }) => void;
+  'deck-imported': (data: { deck: Deck }) => void;
+  'deck-import-error': (data: { error: string }) => void;
   'connect': () => void;
   'disconnect': () => void;
 }
