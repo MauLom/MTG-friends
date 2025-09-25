@@ -21,6 +21,8 @@ export interface Player {
 export interface Deck {
   name: string;
   cards: DeckCard[];
+  remainingCards?: number;
+  drawnCards?: string[]; // Array of card names that have been drawn
 }
 
 export interface DeckCard {
@@ -64,6 +66,7 @@ export interface SocketEvents {
   'move-card': (data: CardMovement & { roomId: string }) => void;
   'send-chat': (roomId: string, message: string) => void;
   'import-deck': (data: { roomId: string; deckUrl: string }) => void;
+  'draw-card': (data: { roomId: string }) => void;
   
   // Server to Client
   'room-joined': (data: { roomId: string; players: Pick<Player, 'name' | 'socketId'>[]; gameState: GameState }) => void;
@@ -72,8 +75,10 @@ export interface SocketEvents {
   'card-moved': (data: CardMovement) => void;
   'chat-message': (data: { playerName: string; message: string }) => void;
   'deck-imported': (data: { deck: Deck }) => void;
+  'card-drawn': (data: { card: Card; remainingCards: number }) => void;
   'player-zones-updated': (data: { zones: { hand: Card[]; library: Card[]; graveyard: Card[]; battlefield: Card[]; exile: Card[]; } }) => void;
   'deck-import-error': (data: { error: string }) => void;
+  'draw-card-error': (data: { error: string }) => void;
   'connect': () => void;
   'disconnect': () => void;
 }

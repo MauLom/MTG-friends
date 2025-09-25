@@ -4,11 +4,10 @@ import { useGameStore } from '@/lib/store';
 import { Button, Badge, Card } from '@/components/ui';
 
 export default function GameHeader() {
-  const { currentRoom, players, gameState } = useGameStore();
+  const { currentRoom, players, gameState, drawCardFromDeck } = useGameStore();
 
   const drawCard = () => {
-    // Placeholder for draw card functionality
-    console.log('Draw card');
+    drawCardFromDeck();
   };
 
   const shuffleLibrary = () => {

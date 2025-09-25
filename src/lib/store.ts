@@ -57,6 +57,7 @@ interface GameStore {
   setCurrentDeck: (deck: Deck | null) => void;
   setDeckImporting: (importing: boolean) => void;
   importDeckFromMoxfield: (deckUrl: string) => void;
+  drawCardFromDeck: () => void;
   
   // Game actions
   joinRoom: (roomId: string, playerName: string) => void;
@@ -129,6 +130,13 @@ export const useGameStore = create<GameStore>()(
         if (socket && currentRoom) {
           set({ deckImporting: true });
           socket.emit('import-deck', { roomId: currentRoom, deckUrl });
+        }
+      },
+
+      drawCardFromDeck: () => {
+        const { socket, currentRoom } = get();
+        if (socket && currentRoom) {
+          socket.emit('draw-card', { roomId: currentRoom });
         }
       },
       

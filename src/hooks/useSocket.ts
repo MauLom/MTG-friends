@@ -98,6 +98,22 @@ export const useSocket = () => {
         setStatusMessage(`Failed to import deck: ${data.error}`, 'error');
       });
 
+      newSocket.on('card-drawn', (data: any) => {
+        // Update the deck's remaining cards count
+        const currentDeck = useGameStore.getState().currentDeck;
+        if (currentDeck) {
+          setCurrentDeck({
+            ...currentDeck,
+            remainingCards: data.remainingCards
+          });
+        }
+        setStatusMessage(`Drew "${data.card.name}" from deck`, 'success');
+      });
+
+      newSocket.on('draw-card-error', (data: any) => {
+        setStatusMessage(`Failed to draw card: ${data.error}`, 'error');
+      });
+
       newSocket.on('player-zones-updated', (data: any) => {
         const { zones } = data;
         setPlayerHand(zones.hand || []);
