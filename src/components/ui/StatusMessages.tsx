@@ -2,47 +2,54 @@
 
 import { useEffect } from 'react';
 import { useGameStore } from '@/lib/store';
-import { Card } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { notifications } from '@mantine/notifications';
 
 export default function StatusMessages() {
   const { statusMessage, clearStatusMessage } = useGameStore();
 
   useEffect(() => {
     if (statusMessage) {
-      const timer = setTimeout(() => {
-        clearStatusMessage();
-      }, 3000);
+      const notificationConfig = {
+        title: '',
+        message: statusMessage.message,
+        autoClose: 3000,
+        withBorder: true,
+        style: {
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(15px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+        },
+      };
 
-      return () => clearTimeout(timer);
+      switch (statusMessage.type) {
+        case 'error':
+          notifications.show({
+            ...notificationConfig,
+            color: 'red',
+            title: 'Error',
+          });
+          break;
+        case 'success':
+          notifications.show({
+            ...notificationConfig,
+            color: 'green',
+            title: 'Success',
+          });
+          break;
+        default:
+          notifications.show({
+            ...notificationConfig,
+            color: 'primary',
+            title: 'Info',
+          });
+          break;
+      }
+
+      clearStatusMessage();
     }
   }, [statusMessage, clearStatusMessage]);
 
-  if (!statusMessage) return null;
-
-  const getStatusStyles = (type: string) => {
-    switch (type) {
-      case 'error':
-        return 'border-l-4 border-l-error-500 bg-error-500/10 text-error-200';
-      case 'success':
-        return 'border-l-4 border-l-success-500 bg-success-500/10 text-success-200';
-      default:
-        return 'border-l-4 border-l-primary-500 bg-primary-500/10 text-primary-200';
-    }
-  };
-
-  return (
-    <div className="fixed top-4 right-4 z-50">
-      <Card
-        variant="glass"
-        padding="md"
-        className={cn(
-          'animate-slide-in max-w-sm',
-          getStatusStyles(statusMessage.type)
-        )}
-      >
-        {statusMessage.message}
-      </Card>
-    </div>
-  );
+  // This component no longer renders anything visible, 
+  // as notifications are handled by Mantine's notification system
+  return null;
 }
