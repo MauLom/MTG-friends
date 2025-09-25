@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '@/lib/store';
+import { Button, Input, Card } from '@/components/ui';
 
 export default function Chat() {
   const [message, setMessage] = useState('');
@@ -30,33 +31,39 @@ export default function Chat() {
   };
 
   return (
-    <div className="chat-area bg-black/30 border-t border-white/10 flex flex-col max-h-48">
-      <div className="chat-messages flex-1 p-4 overflow-y-auto text-sm">
+    <Card 
+      variant="glass" 
+      padding="none" 
+      className="border-t border-white/10 flex flex-col max-h-48"
+    >
+      <div className="flex-1 p-4 overflow-y-auto text-sm space-y-2">
         {chatMessages.map((chat, index) => (
-          <div key={index} className="mb-2">
-            <strong className="text-indigo-300">{chat.playerName}:</strong>{' '}
+          <div key={index} className="animate-fade-in">
+            <strong className="text-primary-300">{chat.playerName}:</strong>{' '}
             <span className="text-white/90">{chat.message}</span>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
       
-      <div className="chat-input flex p-4 gap-3">
-        <input
-          type="text"
+      <div className="flex p-4 gap-3 border-t border-white/10">
+        <Input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Type a message..."
-          className="flex-1 p-2 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/30"
+          variant="glass"
+          size="sm"
+          className="flex-1"
         />
-        <button
+        <Button
           onClick={handleSendMessage}
-          className="btn small bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          variant="primary"
+          size="sm"
         >
           Send
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 }

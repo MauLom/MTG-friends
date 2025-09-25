@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import { useGameStore } from '@/lib/store';
+import { Card } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 export default function StatusMessages() {
   const { statusMessage, clearStatusMessage } = useGameStore();
@@ -18,26 +20,29 @@ export default function StatusMessages() {
 
   if (!statusMessage) return null;
 
-  const getStatusColor = (type: string) => {
+  const getStatusStyles = (type: string) => {
     switch (type) {
       case 'error':
-        return 'border-l-red-500';
+        return 'border-l-4 border-l-error-500 bg-error-500/10 text-error-200';
       case 'success':
-        return 'border-l-green-500';
+        return 'border-l-4 border-l-success-500 bg-success-500/10 text-success-200';
       default:
-        return 'border-l-indigo-500';
+        return 'border-l-4 border-l-primary-500 bg-primary-500/10 text-primary-200';
     }
   };
 
   return (
     <div className="fixed top-4 right-4 z-50">
-      <div
-        className={`bg-black/80 text-white p-4 rounded-lg mb-2 border-l-4 ${getStatusColor(
-          statusMessage.type
-        )} animate-slide-in`}
+      <Card
+        variant="glass"
+        padding="md"
+        className={cn(
+          'animate-slide-in max-w-sm',
+          getStatusStyles(statusMessage.type)
+        )}
       >
         {statusMessage.message}
-      </div>
+      </Card>
     </div>
   );
 }
