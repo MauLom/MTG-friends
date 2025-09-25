@@ -17,7 +17,12 @@ export const useSocket = () => {
     addChatMessage,
     setCurrentDeck,
     setDeckImporting,
-    importDeckFromMoxfield
+    importDeckFromMoxfield,
+    setPlayerHand,
+    setPlayerLibrary,
+    setPlayerGraveyard,
+    setPlayerBattlefield,
+    setPlayerExile
   } = useGameStore();
 
   useEffect(() => {
@@ -93,6 +98,15 @@ export const useSocket = () => {
         setStatusMessage(`Failed to import deck: ${data.error}`, 'error');
       });
 
+      newSocket.on('player-zones-updated', (data: any) => {
+        const { zones } = data;
+        setPlayerHand(zones.hand || []);
+        setPlayerLibrary(zones.library || []);
+        setPlayerGraveyard(zones.graveyard || []);
+        setPlayerBattlefield(zones.battlefield || []);
+        setPlayerExile(zones.exile || []);
+      });
+
       setSocket(newSocket);
     }
 
@@ -102,7 +116,7 @@ export const useSocket = () => {
         setSocket(null);
       }
     };
-  }, [socket, setSocket, setConnected, setCurrentRoom, setPlayers, setGameState, setCurrentScreen, setStatusMessage, addPlayer, removePlayer, addChatMessage, setCurrentDeck, setDeckImporting, importDeckFromMoxfield]);
+  }, [socket, setSocket, setConnected, setCurrentRoom, setPlayers, setGameState, setCurrentScreen, setStatusMessage, addPlayer, removePlayer, addChatMessage, setCurrentDeck, setDeckImporting, importDeckFromMoxfield, setPlayerHand, setPlayerLibrary, setPlayerGraveyard, setPlayerBattlefield, setPlayerExile]);
 
   return socket;
 };

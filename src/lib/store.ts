@@ -14,6 +14,13 @@ interface GameStore {
   players: Pick<Player, 'name' | 'socketId'>[];
   gameState: GameState | null;
   
+  // Player zones
+  playerHand: Card[];
+  playerLibrary: Card[];
+  playerGraveyard: Card[];
+  playerBattlefield: Card[];
+  playerExile: Card[];
+  
   // Deck state
   currentDeck: Deck | null;
   deckImporting: boolean;
@@ -38,6 +45,13 @@ interface GameStore {
   addChatMessage: (message: ChatMessage) => void;
   addPlayer: (player: Pick<Player, 'name' | 'socketId'>) => void;
   removePlayer: (socketId: string) => void;
+  
+  // Player zone actions
+  setPlayerHand: (cards: Card[]) => void;
+  setPlayerLibrary: (cards: Card[]) => void;
+  setPlayerGraveyard: (cards: Card[]) => void;
+  setPlayerBattlefield: (cards: Card[]) => void;
+  setPlayerExile: (cards: Card[]) => void;
   
   // Deck actions
   setCurrentDeck: (deck: Deck | null) => void;
@@ -66,6 +80,13 @@ export const useGameStore = create<GameStore>()(
       currentDeck: null,
       deckImporting: false,
       
+      // Player zones initial state
+      playerHand: [],
+      playerLibrary: [],
+      playerGraveyard: [],
+      playerBattlefield: [],
+      playerExile: [],
+      
       // Basic setters
       setSocket: (socket) => set({ socket }),
       setConnected: (connected) => set({ connected }),
@@ -91,6 +112,13 @@ export const useGameStore = create<GameStore>()(
       removePlayer: (socketId) => set((state) => ({
         players: state.players.filter(p => p.socketId !== socketId)
       })),
+      
+      // Player zone actions
+      setPlayerHand: (playerHand) => set({ playerHand }),
+      setPlayerLibrary: (playerLibrary) => set({ playerLibrary }),
+      setPlayerGraveyard: (playerGraveyard) => set({ playerGraveyard }),
+      setPlayerBattlefield: (playerBattlefield) => set({ playerBattlefield }),
+      setPlayerExile: (playerExile) => set({ playerExile }),
       
       // Deck actions
       setCurrentDeck: (currentDeck) => set({ currentDeck }),

@@ -2,6 +2,10 @@ export interface Card {
   id: string;
   name: string;
   faceDown?: boolean;
+  imageUrl?: string;
+  manaCost?: string;
+  type?: string;
+  oracleText?: string;
 }
 
 export interface Player {
@@ -22,6 +26,10 @@ export interface Deck {
 export interface DeckCard {
   name: string;
   quantity: number;
+  imageUrl?: string;
+  manaCost?: string;
+  type?: string;
+  oracleText?: string;
 }
 
 export interface GameState {
@@ -64,6 +72,7 @@ export interface SocketEvents {
   'card-moved': (data: CardMovement) => void;
   'chat-message': (data: { playerName: string; message: string }) => void;
   'deck-imported': (data: { deck: Deck }) => void;
+  'player-zones-updated': (data: { zones: { hand: Card[]; library: Card[]; graveyard: Card[]; battlefield: Card[]; exile: Card[]; } }) => void;
   'deck-import-error': (data: { error: string }) => void;
   'connect': () => void;
   'disconnect': () => void;

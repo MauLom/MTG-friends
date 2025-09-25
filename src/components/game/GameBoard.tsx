@@ -3,8 +3,17 @@
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import GameZone from './GameZone';
+import { useGameStore } from '@/lib/store';
 
 export default function GameBoard() {
+  const {
+    playerHand,
+    playerLibrary,
+    playerGraveyard,  
+    playerBattlefield,
+    playerExile
+  } = useGameStore();
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="game-board flex-1 grid grid-rows-[auto_1fr_auto] p-4 gap-4">
@@ -23,7 +32,7 @@ export default function GameBoard() {
           <GameZone
             id="battlefield"
             title="Battlefield"
-            cards={[]}
+            cards={playerBattlefield}
             className="min-h-40 flex-1"
           />
         </div>
@@ -34,26 +43,26 @@ export default function GameBoard() {
             <GameZone
               id="graveyard"
               title="Graveyard"
-              cards={[]}
+              cards={playerGraveyard}
               className="min-h-20"
             />
             <GameZone
               id="library"
               title="Library"
-              cards={[]}
+              cards={playerLibrary}
               className="min-h-20"
             />
             <GameZone
               id="exile"
               title="Exile"
-              cards={[]}
+              cards={playerExile}
               className="min-h-20"
             />
           </div>
           <GameZone
             id="hand"
             title="Your Hand"
-            cards={[]}
+            cards={playerHand}
             className="min-h-20"
           />
         </div>
