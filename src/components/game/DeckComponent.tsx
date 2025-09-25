@@ -29,20 +29,20 @@ export default function DeckComponent({ className = '' }: DeckComponentProps) {
       onClick={handleClick}
       title={`${currentDeck.name} - ${remainingCards} cards remaining`}
     >
-      <div className="relative w-15 h-21 bg-gradient-to-br from-amber-800 to-amber-900 border-2 border-amber-600 rounded-lg shadow-lg">
+      <div className="relative w-20 h-28 bg-gradient-to-br from-amber-800 to-amber-900 border-2 border-amber-600 rounded-lg shadow-lg">
         {/* Magic card back pattern */}
         <div className="w-full h-full rounded-lg bg-gradient-to-br from-amber-700 via-amber-800 to-amber-900 relative overflow-hidden">
           {/* Decorative pattern */}
           <div className="absolute inset-2 border border-amber-500 rounded-md opacity-60">
             <div className="absolute inset-1 border border-amber-400 rounded-sm opacity-40">
               <div className="w-full h-full flex items-center justify-center">
-                <div className="text-amber-300 text-xs font-bold opacity-80">MTG</div>
+                <div className="text-amber-300 text-sm font-bold opacity-80">MTG</div>
               </div>
             </div>
           </div>
           
-          {/* Card count indicator */}
-          <div className="absolute bottom-1 right-1 bg-black/50 text-white text-xs px-1 rounded">
+          {/* Card count indicator - make it more prominent */}
+          <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded-full border-2 border-white shadow-lg">
             {remainingCards}
           </div>
         </div>
