@@ -1,0 +1,23 @@
+{
+  "name": "mtg-friends",
+  "version": "1.0.0",
+  "description": "A web-based TCG application for Magic: The Gathering with multiplayer support and Moxfield integration",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["mtg", "magic", "tcg", "multiplayer", "moxfield"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
