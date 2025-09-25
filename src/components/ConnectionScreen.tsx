@@ -7,8 +7,17 @@ import { Button, Input, Card } from '@/components/ui';
 export default function ConnectionScreen() {
   const [playerName, setPlayerName] = useState('');
   const [roomId, setRoomId] = useState('');
+  const [moxfieldUrl, setMoxfieldUrl] = useState('');
   const [nameError, setNameError] = useState('');
-  const { joinRoom, setPlayerName: setStorePlayerName } = useGameStore();
+  const [moxfieldError, setMoxfieldError] = useState('');
+  const { joinRoom, setPlayerName: setStorePlayerName, importDeckFromMoxfield, deckImporting } = useGameStore();
+
+  const isValidMoxfieldUrl = (url: string) => {
+    const patterns = [
+      /^https?:\/\/(www\.)?moxfield\.com\/decks\/[a-zA-Z0-9_-]+\/?$/
+    ];
+    return patterns.some(pattern => pattern.test(url));
+  };
 
   const handleJoinGame = () => {
     if (!playerName.trim()) {
@@ -16,9 +25,24 @@ export default function ConnectionScreen() {
       return;
     }
 
+    if (!moxfieldUrl.trim()) {
+      setMoxfieldError('Please enter a Moxfield deck URL');
+      return;
+    }
+
+    if (!isValidMoxfieldUrl(moxfieldUrl.trim())) {
+      setMoxfieldError('Please enter a valid Moxfield deck URL');
+      return;
+    }
+
     setNameError('');
+    setMoxfieldError('');
     const finalRoomId = roomId.trim() || generateRoomId();
     setStorePlayerName(playerName.trim());
+    
+    // Store the Moxfield URL for import after joining
+    sessionStorage.setItem('pendingMoxfieldUrl', moxfieldUrl.trim());
+    
     joinRoom(finalRoomId, playerName.trim());
   };
 
@@ -67,6 +91,21 @@ export default function ConnectionScreen() {
             helperText="Leave blank to create a new room"
             variant="glass"
           />
+
+          <Input
+            label="Moxfield Deck URL"
+            type="url"
+            value={moxfieldUrl}
+            onChange={(e) => {
+              setMoxfieldUrl(e.target.value);
+              if (moxfieldError) setMoxfieldError('');
+            }}
+            placeholder="https://www.moxfield.com/decks/..."
+            helperText="Required: Enter your Moxfield deck URL to join the game"
+            error={moxfieldError}
+            variant="glass"
+            required
+          />
         </div>
 
         <div className="mt-8 space-y-4">
@@ -75,8 +114,9 @@ export default function ConnectionScreen() {
             variant="primary"
             size="lg"
             className="w-full"
+            disabled={deckImporting}
           >
-            Join Game
+            {deckImporting ? 'Importing Deck...' : 'Join Game'}
           </Button>
 
           <div className="divider my-6 relative">

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector, devtools } from 'zustand/middleware';
 import { Socket } from 'socket.io-client';
-import { GameState, Player, Card, ChatMessage } from '@/types/game';
+import { GameState, Player, Card, ChatMessage, Deck } from '@/types/game';
 
 interface GameStore {
   // Connection state
@@ -13,6 +13,10 @@ interface GameStore {
   playerName: string | null;
   players: Pick<Player, 'name' | 'socketId'>[];
   gameState: GameState | null;
+  
+  // Deck state
+  currentDeck: Deck | null;
+  deckImporting: boolean;
   
   // UI state
   currentScreen: 'connection' | 'game';
@@ -35,6 +39,11 @@ interface GameStore {
   addPlayer: (player: Pick<Player, 'name' | 'socketId'>) => void;
   removePlayer: (socketId: string) => void;
   
+  // Deck actions
+  setCurrentDeck: (deck: Deck | null) => void;
+  setDeckImporting: (importing: boolean) => void;
+  importDeckFromMoxfield: (deckUrl: string) => void;
+  
   // Game actions
   joinRoom: (roomId: string, playerName: string) => void;
   moveCard: (cardId: string, from: string, to: string, position?: number) => void;
@@ -54,6 +63,8 @@ export const useGameStore = create<GameStore>()(
       currentScreen: 'connection',
       statusMessage: null,
       chatMessages: [],
+      currentDeck: null,
+      deckImporting: false,
       
       // Basic setters
       setSocket: (socket) => set({ socket }),
@@ -80,6 +91,18 @@ export const useGameStore = create<GameStore>()(
       removePlayer: (socketId) => set((state) => ({
         players: state.players.filter(p => p.socketId !== socketId)
       })),
+      
+      // Deck actions
+      setCurrentDeck: (currentDeck) => set({ currentDeck }),
+      setDeckImporting: (deckImporting) => set({ deckImporting }),
+      
+      importDeckFromMoxfield: (deckUrl) => {
+        const { socket, currentRoom } = get();
+        if (socket && currentRoom) {
+          set({ deckImporting: true });
+          socket.emit('import-deck', { roomId: currentRoom, deckUrl });
+        }
+      },
       
       // Game actions
       joinRoom: (roomId, playerName) => {

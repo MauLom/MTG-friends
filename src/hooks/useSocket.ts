@@ -14,7 +14,10 @@ export const useSocket = () => {
     setStatusMessage,
     addPlayer,
     removePlayer,
-    addChatMessage
+    addChatMessage,
+    setCurrentDeck,
+    setDeckImporting,
+    importDeckFromMoxfield
   } = useGameStore();
 
   useEffect(() => {
@@ -41,6 +44,17 @@ export const useSocket = () => {
         setGameState(data.gameState);
         setCurrentScreen('game');
         setStatusMessage(`Joined room ${data.roomId}`, 'success');
+        
+        // Check if there's a pending Moxfield URL to import
+        const pendingMoxfieldUrl = sessionStorage.getItem('pendingMoxfieldUrl');
+        if (pendingMoxfieldUrl) {
+          // Clear the stored URL
+          sessionStorage.removeItem('pendingMoxfieldUrl');
+          // Import the deck
+          setTimeout(() => {
+            importDeckFromMoxfield(pendingMoxfieldUrl);
+          }, 500); // Small delay to ensure room is fully set up
+        }
       });
 
       newSocket.on('player-joined', (data: any) => {
@@ -67,6 +81,18 @@ export const useSocket = () => {
         });
       });
 
+      // Deck import events
+      newSocket.on('deck-imported', (data: any) => {
+        setCurrentDeck(data.deck);
+        setDeckImporting(false);
+        setStatusMessage(`Deck "${data.deck.name}" imported successfully!`, 'success');
+      });
+
+      newSocket.on('deck-import-error', (data: any) => {
+        setDeckImporting(false);
+        setStatusMessage(`Failed to import deck: ${data.error}`, 'error');
+      });
+
       setSocket(newSocket);
     }
 
@@ -76,7 +102,7 @@ export const useSocket = () => {
         setSocket(null);
       }
     };
-  }, [socket, setSocket, setConnected, setCurrentRoom, setPlayers, setGameState, setCurrentScreen, setStatusMessage, addPlayer, removePlayer, addChatMessage]);
+  }, [socket, setSocket, setConnected, setCurrentRoom, setPlayers, setGameState, setCurrentScreen, setStatusMessage, addPlayer, removePlayer, addChatMessage, setCurrentDeck, setDeckImporting, importDeckFromMoxfield]);
 
   return socket;
 };
