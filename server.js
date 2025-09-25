@@ -46,42 +46,46 @@ function delay(ms) {
 
 // Mock deck data for testing when Moxfield API is not available
 function createMockDeck() {
+  const cards = [
+    {
+      name: "Lightning Bolt",
+      quantity: 4,
+      imageUrl: "https://cards.scryfall.io/normal/front/c/e/ce711943-c1a1-43a0-8b89-8d169cfb8e06.jpg",
+      manaCost: "{R}",
+      type: "Instant",
+      oracleText: "Lightning Bolt deals 3 damage to any target."
+    },
+    {
+      name: "Counterspell",
+      quantity: 4,
+      imageUrl: "https://cards.scryfall.io/normal/front/a/4/a457f404-ddf1-40fa-b0f0-23c8598533f4.jpg",
+      manaCost: "{U}{U}",
+      type: "Instant",
+      oracleText: "Counter target spell."
+    },
+    {
+      name: "Black Lotus",
+      quantity: 1,
+      imageUrl: "https://cards.scryfall.io/normal/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg",
+      manaCost: "{0}",
+      type: "Artifact",
+      oracleText: "{T}, Sacrifice Black Lotus: Add three mana of any one color."
+    },
+    {
+      name: "Serra Angel",
+      quantity: 2,
+      imageUrl: "https://cards.scryfall.io/normal/front/9/0/9067f035-3437-4c5c-bae9-d3c9001a3411.jpg",
+      manaCost: "{3}{W}{W}",
+      type: "Creature — Angel",
+      oracleText: "Flying, vigilance"
+    }
+  ];
+  
   return {
     name: "Test Deck with Card Images",
-    cards: [
-      {
-        name: "Lightning Bolt",
-        quantity: 4,
-        imageUrl: "https://cards.scryfall.io/normal/front/c/e/ce711943-c1a1-43a0-8b89-8d169cfb8e06.jpg",
-        manaCost: "{R}",
-        type: "Instant",
-        oracleText: "Lightning Bolt deals 3 damage to any target."
-      },
-      {
-        name: "Counterspell",
-        quantity: 4,
-        imageUrl: "https://cards.scryfall.io/normal/front/a/4/a457f404-ddf1-40fa-b0f0-23c8598533f4.jpg",
-        manaCost: "{U}{U}",
-        type: "Instant",
-        oracleText: "Counter target spell."
-      },
-      {
-        name: "Black Lotus",
-        quantity: 1,
-        imageUrl: "https://cards.scryfall.io/normal/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg",
-        manaCost: "{0}",
-        type: "Artifact",
-        oracleText: "{T}, Sacrifice Black Lotus: Add three mana of any one color."
-      },
-      {
-        name: "Serra Angel",
-        quantity: 2,
-        imageUrl: "https://cards.scryfall.io/normal/front/9/0/9067f035-3437-4c5c-bae9-d3c9001a3411.jpg",
-        manaCost: "{3}{W}{W}",
-        type: "Creature — Angel",
-        oracleText: "Flying, vigilance"
-      }
-    ]
+    cards: cards,
+    remainingCards: cards.reduce((sum, card) => sum + card.quantity, 0),
+    drawnCards: []
   };
 }
 
@@ -127,7 +131,9 @@ async function importDeckFromMoxfield(deckUrl) {
       
       return {
         name: deckData.name || "Imported Deck",
-        cards: cards
+        cards: cards,
+        remainingCards: cards.reduce((sum, card) => sum + card.quantity, 0),
+        drawnCards: []
       };
     } catch (networkError) {
       console.warn('Moxfield API not available, using mock deck for demonstration:', networkError.message);
@@ -297,6 +303,90 @@ app.prepare().then(() => {
       } catch (error) {
         console.error('Deck import error:', error);
         socket.emit('deck-import-error', { error: error.message });
+      }
+    });
+
+    // Handle drawing a card from deck
+    socket.on('draw-card', (data) => {
+      const { roomId } = data;
+      try {
+        const room = gameRooms.get(roomId);
+        if (!room) {
+          throw new Error('Room not found');
+        }
+
+        const player = room.players.find(p => p.socketId === socket.id);
+        if (!player || !player.deck) {
+          throw new Error('Player or deck not found');
+        }
+
+        const deck = player.deck;
+        
+        // Initialize tracking arrays if they don't exist
+        if (!deck.drawnCards) {
+          deck.drawnCards = [];
+        }
+        
+        // Create a pool of available cards (considering quantities and what's already drawn)
+        const availableCards = [];
+        for (const deckCard of deck.cards) {
+          const cardName = deckCard.name;
+          const drawnCount = deck.drawnCards.filter(name => name === cardName).length;
+          const remainingQuantity = deckCard.quantity - drawnCount;
+          
+          // Add remaining copies to available pool
+          for (let i = 0; i < remainingQuantity; i++) {
+            availableCards.push(deckCard);
+          }
+        }
+
+        if (availableCards.length === 0) {
+          throw new Error('No more cards in deck');
+        }
+
+        // Randomly select a card from available cards
+        const randomIndex = Math.floor(Math.random() * availableCards.length);
+        const selectedCard = availableCards[randomIndex];
+        
+        // Mark this card as drawn
+        deck.drawnCards.push(selectedCard.name);
+        deck.remainingCards = availableCards.length - 1;
+
+        // Create a card instance for the player's hand
+        const drawnCard = {
+          id: `card_${socket.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          name: selectedCard.name,
+          imageUrl: selectedCard.imageUrl,
+          manaCost: selectedCard.manaCost,
+          type: selectedCard.type,
+          oracleText: selectedCard.oracleText,
+          faceDown: false
+        };
+
+        // Add to player's hand
+        player.hand.push(drawnCard);
+
+        console.log(`Player ${player.name} drew "${selectedCard.name}" from deck. ${deck.remainingCards} cards remaining.`);
+
+        // Emit the drawn card and updated zones
+        socket.emit('card-drawn', { 
+          card: drawnCard, 
+          remainingCards: deck.remainingCards 
+        });
+
+        socket.emit('player-zones-updated', {
+          zones: {
+            hand: player.hand,
+            library: player.library,
+            graveyard: player.graveyard,
+            battlefield: player.battlefield,
+            exile: []
+          }
+        });
+
+      } catch (error) {
+        console.error('Draw card error:', error);
+        socket.emit('draw-card-error', { error: error.message });
       }
     });
 

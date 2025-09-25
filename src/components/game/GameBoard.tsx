@@ -3,6 +3,7 @@
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import GameZone from './GameZone';
+import DeckComponent from './DeckComponent';
 import { useGameStore } from '@/lib/store';
 
 export default function GameBoard() {
@@ -58,6 +59,11 @@ export default function GameBoard() {
               cards={playerExile}
               className="min-h-20"
             />
+            {/* Deck Component */}
+            <div className="deck-area">
+              <h3 className="text-sm font-semibold mb-2 text-white/80">Deck</h3>
+              <DeckComponent className="w-fit" />
+            </div>
           </div>
           <GameZone
             id="hand"
