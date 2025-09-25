@@ -1,8 +1,8 @@
 # MTG-friends
 
-A web-based application for playing Magic: The Gathering online with friends, featuring real-time multiplayer gameplay and Moxfield deck integration.
+A modern web-based application for playing Magic: The Gathering online with friends, featuring real-time multiplayer gameplay and Moxfield deck integration. Built with **Next.js 14**, **React**, **TypeScript**, and **Socket.io**.
 
-## Features
+## ✨ Features
 
 - **Real-time Multiplayer**: Play with friends in real-time using WebSocket connections
 - **Drag & Drop Interface**: Intuitive card movement between different game zones
@@ -10,6 +10,7 @@ A web-based application for playing Magic: The Gathering online with friends, fe
 - **Game Zones**: Full Magic gameplay zones including hand, library, graveyard, battlefield, and exile
 - **Chat System**: Built-in chat for communication during games
 - **Responsive Design**: Works on desktop and mobile devices
+- **Type Safety**: Full TypeScript support for better development experience
 
 ## Game Zones
 
@@ -24,7 +25,7 @@ A web-based application for playing Magic: The Gathering online with friends, fe
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 
 ### Installation
@@ -51,6 +52,7 @@ npm run dev
 
 To run in production:
 ```bash
+npm run build
 npm start
 ```
 
@@ -81,12 +83,49 @@ npm start
 - `GET /api/rooms` - List active game rooms
 - WebSocket events for real-time gameplay
 
-## Technology Stack
+## 🛠 Technology Stack
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Node.js, Express.js
-- **Real-time**: Socket.io
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS with custom animations
+- **State Management**: Zustand for efficient state handling
+- **Drag & Drop**: React DnD for smooth card interactions
+- **Backend**: Custom Node.js server with Next.js
+- **Real-time**: Socket.io for multiplayer functionality
 - **HTTP Client**: Axios (for API integration)
+
+## 🏗 Project Structure
+
+```
+MTG-friends/
+├── src/
+│   ├── app/
+│   │   ├── api/          # Next.js API routes
+│   │   ├── globals.css   # Global styles
+│   │   ├── layout.tsx    # Root layout
+│   │   └── page.tsx      # Home page
+│   ├── components/
+│   │   ├── game/         # Game-related components
+│   │   └── ui/           # UI components
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities and stores
+│   └── types/            # TypeScript type definitions
+├── server.js             # Custom Next.js server with Socket.io
+├── public/               # Legacy files (kept for reference)
+└── server/               # Legacy server (kept for reference)
+```
+
+## 🔄 Migration from Legacy
+
+This project has been migrated from vanilla JavaScript to a modern React/Next.js architecture:
+
+- **Before**: Vanilla JavaScript, Express server, plain HTML/CSS
+- **After**: Next.js with React, TypeScript, Tailwind CSS, Zustand state management
+
+### Legacy Commands (still available)
+```bash
+npm run legacy:dev    # Run old vanilla JS version
+npm run legacy:start  # Run old vanilla JS version in production
+```
 
 ## Future Features
 
@@ -99,6 +138,8 @@ npm start
 - [ ] Card image integration
 - [ ] Sound effects
 - [ ] Mobile app version
+- [ ] Advanced card interactions (tapping, counters)
+- [ ] Deck builder interface
 
 ## Contributing
 
