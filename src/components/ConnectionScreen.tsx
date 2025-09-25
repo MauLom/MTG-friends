@@ -10,7 +10,7 @@ export default function ConnectionScreen() {
   const [moxfieldUrl, setMoxfieldUrl] = useState('');
   const [nameError, setNameError] = useState('');
   const [moxfieldError, setMoxfieldError] = useState('');
-  const { joinRoom, setPlayerName: setStorePlayerName, importDeckFromMoxfield, deckImporting } = useGameStore();
+  const { joinRoom, setPlayerName: setStorePlayerName, deckImporting } = useGameStore();
 
   const isValidMoxfieldUrl = (url: string) => {
     const patterns = [
