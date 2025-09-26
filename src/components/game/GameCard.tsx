@@ -39,19 +39,23 @@ export default function GameCard({ card, zone }: GameCardProps) {
         onDoubleClick={handleDoubleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        className={`card w-15 h-21 bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-500 rounded-lg cursor-pointer transition-all duration-300 relative select-none overflow-hidden ${
-          isDragging ? 'opacity-50 rotate-2' : 'hover:scale-105 hover:shadow-lg hover:z-10 hover:-translate-y-1'
+        className={`card w-fit h-fit bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-500 rounded-lg cursor-pointer transition-all duration-300 relative select-none overflow-hidden ${
+          isDragging ? 'opacity-50 rotate-2' : 'hover:scale-110 hover:shadow-lg hover:z-10 hover:-translate-y-1'
         } ${card.faceDown ? 'bg-gradient-to-br from-amber-800 to-amber-900' : ''}`}
       >
         {showImage ? (
           <img
             src={card.imageUrl}
             alt={card.name}
-            className="w-full h-full object-cover rounded-lg"
+            style={{ width: '60px', height: '84px' }}
+            className="object-cover rounded-lg"
             onError={handleImageError}
           />
         ) : (
-          <div className="card-name p-1 break-words leading-tight text-xs text-center flex items-center justify-center h-full">
+          <div 
+            style={{ width: '60px', height: '84px' }}
+            className="card-name p-1 break-words leading-tight text-xs text-center flex items-center justify-center"
+          >
             {card.faceDown ? '???' : card.name}
           </div>
         )}

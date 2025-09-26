@@ -9,6 +9,8 @@ interface DeckComponentProps {
 export default function DeckComponent({ className = '' }: DeckComponentProps) {
   const { currentDeck, drawCardFromDeck } = useGameStore();
 
+  console.log('Current Deck:', currentDeck);
+  
   if (!currentDeck) {
     return null;
   }

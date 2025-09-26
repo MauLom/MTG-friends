@@ -10,6 +10,15 @@ export default function GameHeader() {
     drawCardFromDeck();
   };
 
+  const drawMultipleCards = (count: number) => {
+    for (let i = 0; i < count; i++) {
+      // Add a small delay between draws to make it feel more natural
+      setTimeout(() => {
+        drawCardFromDeck();
+      }, i * 150); // 150ms delay between each card
+    }
+  };
+
   const shuffleLibrary = () => {
     // Placeholder for shuffle library functionality
     console.log('Shuffle library');
@@ -54,6 +63,13 @@ export default function GameHeader() {
           size="sm"
         >
           Draw Card
+        </Button>
+        <Button
+          onClick={() => drawMultipleCards(7)}
+          variant="secondary"
+          size="sm"
+        >
+          Draw Opening Hand (7)
         </Button>
         <Button
           onClick={shuffleLibrary}

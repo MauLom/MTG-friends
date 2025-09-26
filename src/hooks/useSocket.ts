@@ -88,6 +88,9 @@ export const useSocket = () => {
 
       // Deck import events
       newSocket.on('deck-imported', (data: any) => {
+        console.log('Deck imported:', data.deck);
+        console.log('Deck cards array:', data.deck.cards);
+        console.log('Number of cards:', data.deck.cards?.length || 0);
         setCurrentDeck(data.deck);
         setDeckImporting(false);
         setStatusMessage(`Deck "${data.deck.name}" imported successfully!`, 'success');
@@ -99,7 +102,6 @@ export const useSocket = () => {
       });
 
       newSocket.on('card-drawn', (data: any) => {
-        // Update the deck's remaining cards count
         const currentDeck = useGameStore.getState().currentDeck;
         if (currentDeck) {
           setCurrentDeck({

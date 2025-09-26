@@ -35,7 +35,7 @@ export default function GameZone({ id, title, cards, className = '' }: GameZoneP
       } ${className}`}
     >
       <h3 className="text-sm font-semibold mb-2 text-white/80">{title}</h3>
-      <div className="card-container flex flex-wrap gap-2 min-h-[60px]">
+      <div className={`card-container ${id === 'hand' ? 'flex flex-nowrap gap-1 overflow-x-auto' : 'flex flex-wrap gap-2'} min-h-[60px]`}>
         {cards.map((card) => (
           <GameCard key={card.id} card={card} zone={id} />
         ))}

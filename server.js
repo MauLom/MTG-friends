@@ -102,33 +102,92 @@ async function importDeckFromMoxfield(deckUrl) {
       // Fetch deck from Moxfield API  
       const deckData = await moxfield.deckList.findById(deckId);
       
+      // Quick check of key properties
+      console.log(`Deck: "${deckData.name}"`);
+      console.log('Has boards:', !!deckData.boards);
+      console.log('Available boards:', deckData.boards ? Object.keys(deckData.boards) : 'none');
+      
+      if (deckData.boards) {
+        if (deckData.boards.commanders) {
+          console.log('Commander count:', deckData.boards.commanders.count);
+        }
+        if (deckData.boards.mainboard) {
+          console.log('Mainboard count:', deckData.boards.mainboard.count);
+        }
+      }
+
       // Transform the deck data to our format and fetch card images
       const cards = [];
       
-      // Add mainboard cards
-      if (deckData.mainboard) {
-        console.log(`Fetching card data for ${Object.keys(deckData.mainboard).length} unique cards...`);
+      // Process Commander deck structure - get BOTH commanders and mainboard
+      if (deckData.boards) {
         
-        for (const [cardId, cardInfo] of Object.entries(deckData.mainboard)) {
-          const cardName = cardInfo.card.name;
+        // 1. Add Commander(s) - usually 1 card
+        if (deckData.boards.commanders && deckData.boards.commanders.cards) {
+          const commanderCards = deckData.boards.commanders.cards;
+          console.log(`Processing ${Object.keys(commanderCards).length} commander(s)...`);
           
-          // Fetch additional card data from Scryfall
-          const scryfallData = await fetchCardFromScryfall(cardName);
+          for (const [cardId, cardData] of Object.entries(commanderCards)) {
+            const cardName = cardData.card?.name;
+            const quantity = cardData.quantity || 1;
+            
+            if (cardName) {
+              console.log(`Adding Commander: ${cardName} x${quantity}`);
+              
+              const scryfallData = await fetchCardFromScryfall(cardName);
+              
+              cards.push({
+                name: cardName,
+                quantity: quantity,
+                imageUrl: scryfallData.imageUrl,
+                manaCost: scryfallData.manaCost,
+                type: scryfallData.type,
+                oracleText: scryfallData.oracleText,
+                isCommander: true // Mark commanders
+              });
+              
+              await delay(100);
+            }
+          }
+        }
+
+        // 2. Add Mainboard - the other 99 cards
+        if (deckData.boards.mainboard && deckData.boards.mainboard.cards) {
+          const mainboardCards = deckData.boards.mainboard.cards;
+          console.log(`Processing ${Object.keys(mainboardCards).length} mainboard cards...`);
           
-          cards.push({
-            name: cardName,
-            quantity: cardInfo.quantity,
-            imageUrl: scryfallData.imageUrl,
-            manaCost: scryfallData.manaCost,
-            type: scryfallData.type,
-            oracleText: scryfallData.oracleText
-          });
-          
-          // Add small delay to be respectful to Scryfall API
-          await delay(100);
+          let processedCount = 0;
+          for (const [cardId, cardData] of Object.entries(mainboardCards)) {
+            const cardName = cardData.card?.name;
+            const quantity = cardData.quantity || 1;
+            
+            if (cardName) {
+              console.log(`Adding: ${cardName} x${quantity}`);
+              
+              const scryfallData = await fetchCardFromScryfall(cardName);
+              
+              cards.push({
+                name: cardName,
+                quantity: quantity,
+                imageUrl: scryfallData.imageUrl,
+                manaCost: scryfallData.manaCost,
+                type: scryfallData.type,
+                oracleText: scryfallData.oracleText
+              });
+              
+              processedCount++;
+              
+              await delay(100);
+            }
+          }
         }
       }
       
+      if (cards.length === 0) {
+        console.log('No cards found! Available boards:', deckData.boards ? Object.keys(deckData.boards) : 'none');
+      }
+      
+      console.log(`Successfully processed ${cards.length} cards from Moxfield API`);
       return {
         name: deckData.name || "Imported Deck",
         cards: cards,
@@ -138,7 +197,9 @@ async function importDeckFromMoxfield(deckUrl) {
     } catch (networkError) {
       console.warn('Moxfield API not available, using mock deck for demonstration:', networkError.message);
       // Return mock data for demonstration when API is not available
-      return createMockDeck();
+      const mockDeck = createMockDeck();
+      console.log(`Using mock deck with ${mockDeck.cards.length} cards`);
+      return mockDeck;
     }
   } catch (error) {
     console.error('Error importing deck from Moxfield:', error);
@@ -270,21 +331,49 @@ app.prepare().then(() => {
           if (player) {
             player.deck = deck;
             
-            // For demonstration, add some cards to the player's hand with images
-            const sampleCards = deck.cards.slice(0, 3).map((deckCard, index) => ({
-              id: `card_${socket.id}_${index}`,
-              name: deckCard.name,
-              imageUrl: deckCard.imageUrl,
-              manaCost: deckCard.manaCost,
-              type: deckCard.type,
-              oracleText: deckCard.oracleText,
-              faceDown: false
-            }));
+            // Separate commanders from regular cards
+            const commanders = deck.cards.filter(card => card.isCommander);
+            const regularCards = deck.cards.filter(card => !card.isCommander);
             
-            player.hand.push(...sampleCards);
+            // Clear existing zones
+            player.hand = [];
+            player.battlefield = [];
+            
+            // Add commanders to battlefield (command zone)
+            if (commanders.length > 0) {
+              const commanderCards = commanders.map((deckCard, index) => ({
+                id: `commander_${socket.id}_${index}`,
+                name: deckCard.name,
+                imageUrl: deckCard.imageUrl,
+                manaCost: deckCard.manaCost,
+                type: deckCard.type,
+                oracleText: deckCard.oracleText,
+                faceDown: false,
+                isCommander: true
+              }));
+              
+              player.battlefield.push(...commanderCards);
+              console.log(`Added ${commanders.length} commander(s) to command zone`);
+            }
+            
+            // Add first few regular cards to hand for initial setup
+            if (regularCards.length > 0) {
+              const initialHandSize = Math.min(3, regularCards.length);
+              const handCards = regularCards.slice(0, initialHandSize).map((deckCard, index) => ({
+                id: `card_${socket.id}_${index}`,
+                name: deckCard.name,
+                imageUrl: deckCard.imageUrl,
+                manaCost: deckCard.manaCost,
+                type: deckCard.type,
+                oracleText: deckCard.oracleText,
+                faceDown: false
+              }));
+              
+              player.hand.push(...handCards);
+              console.log(`Added ${initialHandSize} cards to starting hand`);
+            }
             
             console.log(`Deck "${deck.name}" imported for player ${player.name} in room ${roomId}`);
-            console.log(`Added ${sampleCards.length} sample cards to player's hand for demonstration`);
             
             // Emit updated player zones to the client
             socket.emit('player-zones-updated', {
@@ -299,6 +388,12 @@ app.prepare().then(() => {
           }
         }
         
+        console.log('About to emit deck-imported with deck:', {
+          name: deck.name,
+          cardsCount: deck.cards?.length || 0,
+          sampleCards: deck.cards?.slice(0, 2) || [],
+          raw: deck
+        });
         socket.emit('deck-imported', { deck });
       } catch (error) {
         console.error('Deck import error:', error);
