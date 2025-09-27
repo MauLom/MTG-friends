@@ -10,7 +10,14 @@ export default function ConnectionScreen() {
   const [moxfieldUrl, setMoxfieldUrl] = useState('');
   const [nameError, setNameError] = useState('');
   const [moxfieldError, setMoxfieldError] = useState('');
-  const { joinRoom, setPlayerName: setStorePlayerName, deckImporting } = useGameStore();
+  const { 
+    joinRoom, 
+    setPlayerName: setStorePlayerName, 
+    deckImporting, 
+    isJoiningRoom,
+    setIsJoiningRoom,
+    setCurrentScreen 
+  } = useGameStore();
 
   const isValidMoxfieldUrl = (url: string) => {
     const patterns = [
@@ -42,6 +49,10 @@ export default function ConnectionScreen() {
     
     // Store the Moxfield URL for import after joining
     sessionStorage.setItem('pendingMoxfieldUrl', moxfieldUrl.trim());
+    
+    // Show loading screen
+    setIsJoiningRoom(true);
+    setCurrentScreen('loading');
     
     joinRoom(finalRoomId, playerName.trim());
   };

@@ -22,7 +22,9 @@ export const useSocket = () => {
     setPlayerLibrary,
     setPlayerGraveyard,
     setPlayerBattlefield,
-    setPlayerExile
+    setPlayerExile,
+    setIsJoiningRoom,
+    setGameReady
   } = useGameStore();
 
   useEffect(() => {
@@ -47,18 +49,23 @@ export const useSocket = () => {
         setCurrentRoom(data.roomId);
         setPlayers(data.players);
         setGameState(data.gameState);
-        setCurrentScreen('game');
-        setStatusMessage(`Joined room ${data.roomId}`, 'success');
+        setIsJoiningRoom(false);
         
         // Check if there's a pending Moxfield URL to import
         const pendingMoxfieldUrl = sessionStorage.getItem('pendingMoxfieldUrl');
         if (pendingMoxfieldUrl) {
           // Clear the stored URL
           sessionStorage.removeItem('pendingMoxfieldUrl');
+          setStatusMessage('Importing deck...', 'info');
           // Import the deck
           setTimeout(() => {
             importDeckFromMoxfield(pendingMoxfieldUrl);
           }, 500); // Small delay to ensure room is fully set up
+        } else {
+          // No deck to import, go straight to game
+          setCurrentScreen('game');
+          setGameReady(true);
+          setStatusMessage(`Joined room ${data.roomId}`, 'success');
         }
       });
 
@@ -93,7 +100,9 @@ export const useSocket = () => {
         console.log('Number of cards:', data.deck.cards?.length || 0);
         setCurrentDeck(data.deck);
         setDeckImporting(false);
-        setStatusMessage(`Deck "${data.deck.name}" imported successfully!`, 'success');
+        setGameReady(true);
+        setCurrentScreen('game');
+        setStatusMessage(`Deck "${data.deck.name}" imported successfully! ${data.deck.cards?.length || 0} cards loaded.`, 'success');
       });
 
       newSocket.on('deck-import-error', (data: any) => {

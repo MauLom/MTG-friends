@@ -4,7 +4,7 @@ import { useGameStore } from '@/lib/store';
 import { Button, Badge, Card } from '@/components/ui';
 
 export default function GameHeader() {
-  const { currentRoom, players, gameState, drawCardFromDeck } = useGameStore();
+  const { currentRoom, players, gameState, drawCardFromDeck, gameReady, currentDeck } = useGameStore();
 
   const drawCard = () => {
     drawCardFromDeck();
@@ -61,6 +61,7 @@ export default function GameHeader() {
           onClick={drawCard}
           variant="primary"
           size="sm"
+          disabled={!gameReady || !currentDeck}
         >
           Draw Card
         </Button>
@@ -68,6 +69,7 @@ export default function GameHeader() {
           onClick={() => drawMultipleCards(7)}
           variant="secondary"
           size="sm"
+          disabled={!gameReady || !currentDeck}
         >
           Draw Opening Hand (7)
         </Button>
@@ -75,6 +77,7 @@ export default function GameHeader() {
           onClick={shuffleLibrary}
           variant="secondary"
           size="sm"
+          disabled={!gameReady}
         >
           Shuffle Library
         </Button>

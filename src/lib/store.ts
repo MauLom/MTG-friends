@@ -26,8 +26,10 @@ interface GameStore {
   deckImporting: boolean;
   
   // UI state
-  currentScreen: 'connection' | 'game';
+  currentScreen: 'connection' | 'game' | 'loading';
   statusMessage: { message: string; type: 'info' | 'success' | 'error' } | null;
+  isJoiningRoom: boolean;
+  gameReady: boolean;
   
   // Chat
   chatMessages: ChatMessage[];
@@ -39,7 +41,9 @@ interface GameStore {
   setPlayerName: (name: string | null) => void;
   setPlayers: (players: Pick<Player, 'name' | 'socketId'>[]) => void;
   setGameState: (gameState: GameState | null) => void;
-  setCurrentScreen: (screen: 'connection' | 'game') => void;
+  setCurrentScreen: (screen: 'connection' | 'game' | 'loading') => void;
+  setIsJoiningRoom: (isJoining: boolean) => void;
+  setGameReady: (ready: boolean) => void;
   setStatusMessage: (message: string, type: 'info' | 'success' | 'error') => void;
   clearStatusMessage: () => void;
   addChatMessage: (message: ChatMessage) => void;
@@ -80,6 +84,8 @@ export const useGameStore = create<GameStore>()(
       chatMessages: [],
       currentDeck: null,
       deckImporting: false,
+      isJoiningRoom: false,
+      gameReady: false,
       
       // Player zones initial state
       playerHand: [],
@@ -96,6 +102,8 @@ export const useGameStore = create<GameStore>()(
       setPlayers: (players) => set({ players }),
       setGameState: (gameState) => set({ gameState }),
       setCurrentScreen: (currentScreen) => set({ currentScreen }),
+      setIsJoiningRoom: (isJoiningRoom: boolean) => set({ isJoiningRoom }),
+      setGameReady: (gameReady: boolean) => set({ gameReady }),
       
       setStatusMessage: (message, type) => set({ 
         statusMessage: { message, type } 

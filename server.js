@@ -146,38 +146,50 @@ async function importDeckFromMoxfield(deckUrl) {
                 isCommander: true // Mark commanders
               });
               
-              await delay(100);
+              await delay(50);
             }
           }
         }
 
-        // 2. Add Mainboard - the other 99 cards
+        // 2. Add Mainboard - the other 99 cards (optimized batch processing)
         if (deckData.boards.mainboard && deckData.boards.mainboard.cards) {
           const mainboardCards = deckData.boards.mainboard.cards;
-          console.log(`Processing ${Object.keys(mainboardCards).length} mainboard cards...`);
+          const totalCards = Object.keys(mainboardCards).length;
+          console.log(`Processing ${totalCards} mainboard cards in batches...`);
           
-          let processedCount = 0;
-          for (const [cardId, cardData] of Object.entries(mainboardCards)) {
-            const cardName = cardData.card?.name;
-            const quantity = cardData.quantity || 1;
+          // Process in batches of 10 to avoid overwhelming Scryfall API
+          const entries = Object.entries(mainboardCards);
+          const batchSize = 10;
+          
+          for (let i = 0; i < entries.length; i += batchSize) {
+            const batch = entries.slice(i, i + batchSize);
+            const batchPromises = batch.map(async ([cardId, cardData]) => {
+              const cardName = cardData.card?.name;
+              const quantity = cardData.quantity || 1;
+              
+              if (cardName) {
+                const scryfallData = await fetchCardFromScryfall(cardName);
+                return {
+                  name: cardName,
+                  quantity: quantity,
+                  imageUrl: scryfallData.imageUrl,
+                  manaCost: scryfallData.manaCost,
+                  type: scryfallData.type,
+                  oracleText: scryfallData.oracleText
+                };
+              }
+              return null;
+            });
             
-            if (cardName) {
-              console.log(`Adding: ${cardName} x${quantity}`);
-              
-              const scryfallData = await fetchCardFromScryfall(cardName);
-              
-              cards.push({
-                name: cardName,
-                quantity: quantity,
-                imageUrl: scryfallData.imageUrl,
-                manaCost: scryfallData.manaCost,
-                type: scryfallData.type,
-                oracleText: scryfallData.oracleText
-              });
-              
-              processedCount++;
-              
-              await delay(100);
+            const batchResults = await Promise.all(batchPromises);
+            const validCards = batchResults.filter(card => card !== null);
+            cards.push(...validCards);
+            
+            console.log(`Processed batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(entries.length/batchSize)} (${validCards.length} cards)`);
+            
+            // Small delay between batches
+            if (i + batchSize < entries.length) {
+              await delay(200);
             }
           }
         }
