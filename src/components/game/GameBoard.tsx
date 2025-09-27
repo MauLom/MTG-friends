@@ -47,7 +47,7 @@ export default function GameBoard() {
         </div>
 
         {/* Opponents Area - Top */}
-        <div className="absolute top-16 left-4 right-4 z-30">
+        <div className="absolute top-16 left-4 right-4 z-20">
           <div className="flex gap-4 justify-center">
             {opponents.map((opponent) => (
               <PlayerZone
@@ -73,7 +73,7 @@ export default function GameBoard() {
         <div className="absolute top-32 left-4 right-4 bottom-48 z-20">
           <div className="h-full flex items-center justify-center">
             {/* Central Turn Tracker */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
               <TurnTracker />
             </div>
 
@@ -95,7 +95,7 @@ export default function GameBoard() {
         </div>
 
         {/* Current Player Area - Bottom */}
-        <div className="absolute bottom-4 left-4 right-4 z-30">
+        <div className="absolute bottom-4 left-4 right-4 z-20">
           <PlayerZone
             playerName={playerName || 'You'}
             isCurrentPlayer={true}
