@@ -77,6 +77,9 @@ const config: Config = {
           dark: 'rgba(0, 0, 0, 0.3)',
         }
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
       fontFamily: {
         sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },

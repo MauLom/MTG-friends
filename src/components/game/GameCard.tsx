@@ -39,9 +39,17 @@ export default function GameCard({ card, zone }: GameCardProps) {
         onDoubleClick={handleDoubleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        className={`card w-fit h-fit bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-500 rounded-lg cursor-pointer transition-all duration-300 relative select-none overflow-hidden ${
-          isDragging ? 'opacity-50 rotate-2' : 'hover:scale-110 hover:shadow-lg hover:z-10 hover:-translate-y-1'
-        } ${card.faceDown ? 'bg-gradient-to-br from-amber-800 to-amber-900' : ''}`}
+        className={`
+          card w-fit h-fit bg-gradient-to-br from-slate-600 to-slate-700 
+          border-2 border-slate-500 rounded-lg cursor-pointer 
+          transition-all duration-300 relative select-none overflow-hidden
+          ${isDragging ? 
+            'opacity-50 rotate-2 scale-95' : 
+            'hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/25 hover:z-10 hover:-translate-y-2 hover:border-blue-400/50'
+          } 
+          ${card.faceDown ? 'bg-gradient-to-br from-amber-800 to-amber-900 border-amber-600' : ''}
+          ${!isDragging ? 'hover:ring-2 hover:ring-blue-400/30' : ''}
+        `}
       >
         {showImage ? (
           <img
