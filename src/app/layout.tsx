@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MantineProvider } from '@/components/providers/MantineProvider';
+import { UiProvider } from '@/app/providers/UiProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <MantineProvider>
+        <UiProvider>
           {children}
-        </MantineProvider>
+        </UiProvider>
       </body>
     </html>
   );
