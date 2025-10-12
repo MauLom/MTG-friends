@@ -32,32 +32,27 @@ export default function HandZone({ cards, className = '' }: HandZoneProps) {
     <div
       ref={setNodeRef}
       className={`
-        hand-zone relative group overflow-hidden
+        hand-zone relative group
         bg-gradient-to-t from-blue-900/30 to-blue-800/20 
         rounded-t-2xl transition-all duration-300 backdrop-blur-sm
         
         ${className}
       `}
       style={{
-        minHeight: '180px', // Increased to accommodate hover effects
+        minHeight: '140px', // Reduced for the new compact layout
         borderBottomLeftRadius: '0',
         borderBottomRightRadius: '0',
+        zIndex: 1, // Base z-index for hand zone
       }}
     >
-      {/* Hand title - only show when hovering or when cards are present */}
-      <div className={`
-        absolute top-2 left-4 text-xs font-semibold text-blue-300/80 transition-opacity duration-300
-        ${cards.length > 0 || isOver ? 'opacity-100' : 'opacity-60'}
-      `}>
-        Your Hand ({cards.length})
-      </div>
+      {/* Hand title removed - now shown in PlayerZone */}
       
       {/* Fan layout container */}
       <div 
         className="hand-fan-container absolute bottom-0 left-1/2 transform -translate-x-1/2 pb-4 pt-8"
         style={{
-          width: '95%', // Increased from 80% to give more room for cards
-          height: '160px', // Increased for hover effects
+          width: '100%', // Use full width of the reduced container
+          height: '120px', // Reduced height for compact layout
           perspective: '1000px',
         }}
         onScroll={handleScroll}

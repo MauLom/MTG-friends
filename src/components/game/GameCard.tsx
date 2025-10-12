@@ -53,7 +53,8 @@ export default function GameCard({ card, zone }: GameCardProps) {
     transform: CSS.Translate.toString(transform),
     width: `${cardWidth}px`,
     height: `${cardHeight}px`,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 9999 : 'auto', // Very high z-index when dragging
   };
 
   const handleDoubleClick = () => {
