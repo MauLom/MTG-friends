@@ -14,3 +14,6 @@ export { default as Badge } from './feedback/Badge';
 
 // Keep existing StatusMessages
 export { default as StatusMessages } from './StatusMessages';
+
+// Panel shells
+export * from '../game/panels';
