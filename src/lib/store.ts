@@ -3,10 +3,24 @@ import { subscribeWithSelector, devtools } from 'zustand/middleware';
 import { Socket } from 'socket.io-client';
 import { GameState, Player, Card, ChatMessage, Deck } from '@/types/game';
 
+// Export selectors
+export {
+  selectOnTurnPlayer,
+  selectPreviousTurnPlayer,
+  selectPreviewSides,
+  selectSelfPlayer,
+  useOnTurnPlayer,
+  usePreviousTurnPlayer,
+  usePreviewSides,
+  useSelfPlayer,
+} from './selectors';
+export type { SeatedPlayer, PreviewSides } from './selectors';
+
 interface GameStore {
   // Connection state
   socket: Socket | null;
   connected: boolean;
+  selfSocketId: string | null; // Current player's socket ID
   
   // Game state
   currentRoom: string | null;
@@ -37,6 +51,7 @@ interface GameStore {
   // Actions
   setSocket: (socket: Socket | null) => void;
   setConnected: (connected: boolean) => void;
+  setSelfSocketId: (socketId: string | null) => void;
   setCurrentRoom: (roomId: string | null) => void;
   setPlayerName: (name: string | null) => void;
   setPlayers: (players: Pick<Player, 'name' | 'socketId'>[]) => void;
@@ -75,6 +90,7 @@ export const useGameStore = create<GameStore>()(
       // Initial state
       socket: null,
       connected: false,
+      selfSocketId: null,
       currentRoom: null,
       playerName: null,
       players: [],
@@ -97,6 +113,7 @@ export const useGameStore = create<GameStore>()(
       // Basic setters
       setSocket: (socket) => set({ socket }),
       setConnected: (connected) => set({ connected }),
+      setSelfSocketId: (selfSocketId) => set({ selfSocketId }),
       setCurrentRoom: (currentRoom) => set({ currentRoom }),
       setPlayerName: (playerName) => set({ playerName }),
       setPlayers: (players) => set({ players }),
