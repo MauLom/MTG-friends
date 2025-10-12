@@ -7,6 +7,7 @@ export const useSocket = () => {
     socket,
     setSocket,
     setConnected,
+    setSelfSocketId,
     setCurrentRoom,
     setPlayers,
     setGameState,
@@ -35,12 +36,14 @@ export const useSocket = () => {
       newSocket.on('connect', () => {
         console.log('Connected to server');
         setConnected(true);
+        setSelfSocketId(newSocket.id || null);
         setStatusMessage('Connected to server', 'success');
       });
 
       newSocket.on('disconnect', () => {
         console.log('Disconnected from server');
         setConnected(false);
+        setSelfSocketId(null);
         setStatusMessage('Disconnected from server', 'error');
       });
 
@@ -143,7 +146,7 @@ export const useSocket = () => {
         setSocket(null);
       }
     };
-  }, [socket, setSocket, setConnected, setCurrentRoom, setPlayers, setGameState, setCurrentScreen, setStatusMessage, addPlayer, removePlayer, addChatMessage, setCurrentDeck, setDeckImporting, importDeckFromMoxfield, setPlayerHand, setPlayerLibrary, setPlayerGraveyard, setPlayerBattlefield, setPlayerExile]);
+  }, [socket, setSocket, setConnected, setSelfSocketId, setCurrentRoom, setPlayers, setGameState, setCurrentScreen, setStatusMessage, addPlayer, removePlayer, addChatMessage, setCurrentDeck, setDeckImporting, importDeckFromMoxfield, setPlayerHand, setPlayerLibrary, setPlayerGraveyard, setPlayerBattlefield, setPlayerExile]);
 
   return socket;
 };

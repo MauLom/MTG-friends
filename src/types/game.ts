@@ -38,6 +38,8 @@ export interface GameState {
   phase: 'waiting' | 'playing' | 'ended';
   cards: Card[];
   boardState: Record<string, any>;
+  currentTurnIndex?: number; // Index in the players array for whose turn it is
+  turnOrder?: string[]; // Array of socketIds defining turn order
 }
 
 export interface GameRoom {
