@@ -31,7 +31,7 @@ export default function PreviewBoard({
     >
       <Center className="h-full">
         <Text size="sm" c="dimmed">
-          Preview Board ({position})
+          Preview Board
         </Text>
       </Center>
     </Card>
