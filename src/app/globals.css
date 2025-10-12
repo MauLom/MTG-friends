@@ -188,6 +188,32 @@
     }
   }
 
+  /* Drop zone styles for drag and drop */
+  .drop-zone {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .drop-zone:hover {
+    background: var(--glow-primary);
+    border-color: var(--glow-primary-strong);
+    box-shadow: 0 0 15px var(--glow-primary);
+  }
+
+  .drop-zone:focus-visible {
+    outline: 3px solid var(--glow-primary-strong);
+    outline-offset: 2px;
+    background: var(--glow-primary);
+    box-shadow: 0 0 20px var(--glow-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drop-zone:hover,
+    .drop-zone:focus-visible {
+      transition: none;
+    }
+  }
+
   /* Keyframes defined in Tailwind config will be automatically available */
 }
 
