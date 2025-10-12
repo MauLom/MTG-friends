@@ -119,8 +119,8 @@ export default function LifeCounter({
           thickness={sizeConfig.ringThickness}
           roundCaps
           sections={[
-            // Allow ring to show over 100% when life exceeds starting life
-            { value: lifePercentage, color: getLifeColor() }
+            // Cap at 100% for RingProgress visual, but life value can exceed initial
+            { value: Math.min(lifePercentage, 100), color: getLifeColor() }
           ]}
           label={
             <div className="text-center">
