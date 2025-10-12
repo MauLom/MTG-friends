@@ -191,7 +191,7 @@ export default function VirtualizationDemoPage() {
                 ))
               ) : (
                 <div className="flex items-center justify-center w-full text-white/40 text-sm">
-                  Click "Show Cards" to load cards
+                  Click &ldquo;Show Cards&rdquo; to load cards
                 </div>
               )}
             </div>
@@ -218,7 +218,7 @@ export default function VirtualizationDemoPage() {
                 ))
               ) : (
                 <div className="flex items-center justify-center w-full text-white/40 text-sm">
-                  Click "Show Cards" to load cards
+                  Click &ldquo;Show Cards&rdquo; to load cards
                 </div>
               )}
             </div>
