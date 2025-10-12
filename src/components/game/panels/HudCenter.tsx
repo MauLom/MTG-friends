@@ -10,22 +10,18 @@ export interface HudCenterProps extends React.HTMLAttributes<HTMLDivElement> {
 
 type GamePhase = 'UT' | 'UK' | 'D' | 'MP1' | 'BP' | 'MP2' | 'EP';
 
-const GAME_PHASES: { key: GamePhase; label: string }[] = [
-  { key: 'UT', label: 'UT' },
-  { key: 'UK', label: 'UK' },
-  { key: 'D', label: 'D' },
-  { key: 'MP1', label: 'MP1' },
-  { key: 'BP', label: 'BP' },
-  { key: 'MP2', label: 'MP2' },
-  { key: 'EP', label: 'EP' },
-];
+const GAME_PHASES: GamePhase[] = ['UT', 'UK', 'D', 'MP1', 'BP', 'MP2', 'EP'];
+
+// Commander format starting life total
+const STARTING_LIFE = 40;
 
 // Mock player data for scaffolding (3-6 players)
+// Colors correspond to Mantine's color system
 const MOCK_PLAYERS = [
-  { name: 'Player 1', life: 40, color: 'blue' },
-  { name: 'Player 2', life: 40, color: 'green' },
-  { name: 'Player 3', life: 40, color: 'red' },
-  { name: 'Player 4', life: 40, color: 'yellow' },
+  { name: 'Player 1', life: STARTING_LIFE, color: 'blue' },
+  { name: 'Player 2', life: STARTING_LIFE, color: 'green' },
+  { name: 'Player 3', life: STARTING_LIFE, color: 'red' },
+  { name: 'Player 4', life: STARTING_LIFE, color: 'yellow' },
 ];
 
 /**
@@ -59,12 +55,12 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
             <Group gap="xs">
               {GAME_PHASES.map((phase) => (
                 <Badge
-                  key={phase.key}
+                  key={phase}
                   variant="secondary"
                   size="sm"
                   className="text-xs"
                 >
-                  {phase.label}
+                  {phase}
                 </Badge>
               ))}
             </Group>
@@ -101,7 +97,7 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
                       <RingProgress
                         size={32}
                         thickness={3}
-                        sections={[{ value: (player.life / 40) * 100, color: player.color }]}
+                        sections={[{ value: (player.life / STARTING_LIFE) * 100, color: player.color }]}
                         label={
                           <Text size="xs" className="font-bold text-center">
                             {player.life}
