@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/types/game';
-import { Tooltip } from '@mantine/core';
 
 interface GameCardProps {
   card: Card;
@@ -27,6 +26,7 @@ export const CARD_DIMENSIONS = {
 
 export default function GameCard({ card, zone }: GameCardProps) {
   const [imageError, setImageError] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   
   // Use larger dimensions for cards in hand
   const isInHand = zone === 'hand';
@@ -68,41 +68,16 @@ export default function GameCard({ card, zone }: GameCardProps) {
 
   const showImage = card.imageUrl && !imageError && !card.faceDown;
 
-  // Build tooltip content for cards with oracle text
-  const tooltipLabel = card.oracleText ? (
-    <div>
-      <div className="font-bold text-sm mb-1">{card.name}</div>
-      {card.manaCost && (
-        <div className="text-xs opacity-80 mb-1">Cost: {card.manaCost}</div>
-      )}
-      {card.type && (
-        <div className="text-xs opacity-80 mb-2">{card.type}</div>
-      )}
-      <div className="text-xs">{card.oracleText}</div>
-    </div>
-  ) : null;
-
   return (
-    <Tooltip
-      label={tooltipLabel}
-      position="right"
-      withArrow
-      disabled={!card.oracleText || isDragging}
-      openDelay={300}
-      styles={{
-        tooltip: {
-          backgroundColor: 'rgba(17, 24, 39, 0.95)',
-          border: '1px solid rgba(75, 85, 99, 0.5)',
-          maxWidth: '256px',
-        },
-      }}
-    >
+    <div className="relative">
       <div
         ref={setNodeRef}
         style={style}
         {...listeners}
         {...attributes}
         onDoubleClick={handleDoubleClick}
+        onMouseEnter={() => !isDragging && setShowPreview(true)}
+        onMouseLeave={() => setShowPreview(false)}
         className={`
           card bg-gradient-to-br from-slate-600 to-slate-700 
           border-2 border-slate-500 rounded-lg cursor-pointer 
@@ -132,6 +107,30 @@ export default function GameCard({ card, zone }: GameCardProps) {
           </div>
         )}
       </div>
-    </Tooltip>
+
+      {/* Large Card Preview on Hover */}
+      {showPreview && showImage && !isDragging && (
+        <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 pointer-events-none">
+          <div className="bg-black/90 p-2 rounded-lg shadow-2xl border border-white/20">
+            <img
+              src={card.imageUrl}
+              alt={card.name}
+              className="rounded w-60 h-auto shadow-lg"
+              style={{ aspectRatio: CARD_DIMENSIONS.aspectRatio }}
+            />
+            {/* Card info overlay */}
+            <div className="mt-2 text-white text-sm">
+              <div className="font-bold">{card.name}</div>
+              {card.manaCost && (
+                <div className="text-blue-300 text-xs">{card.manaCost}</div>
+              )}
+              {card.type && (
+                <div className="text-gray-300 text-xs">{card.type}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

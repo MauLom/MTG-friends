@@ -6,16 +6,17 @@ import GameZone from './GameZone';
 import HandZone from './HandZone';
 import BattlefieldZone from './BattlefieldZone';
 import DeckComponent from './DeckComponent';
-import { Card as GameCard } from '@/types/game';
+import GameCard from './GameCard';
+import { Card as CardType } from '@/types/game';
 
 interface PlayerZoneProps {
   playerName: string;
   isCurrentPlayer?: boolean;
   isOpponent?: boolean;
-  hand: GameCard[];
-  graveyard: GameCard[];
-  exile: GameCard[];
-  battlefield: GameCard[];
+  hand: CardType[];
+  graveyard: CardType[];
+  exile: CardType[];
+  battlefield: CardType[];
   className?: string;
 }
 
@@ -195,13 +196,28 @@ export default function PlayerZone({
               <div 
                 ref={setGraveyardRef}
                 className={`
-                  w-12 h-16 rounded border-2 border-dashed cursor-pointer transition-all duration-200
+                  w-12 h-16 rounded cursor-pointer transition-all duration-200 relative overflow-hidden
                   ${isGraveyardOver ? 'scale-105 ring-2 ring-purple-400 shadow-lg shadow-purple-400/50' : ''}
-                  ${graveyard.length > 0 ? 'bg-purple-600/30 border-purple-400/50 hover:bg-purple-600/40' : 'bg-white/5 border-white/20 hover:bg-white/10'}
-                  flex items-center justify-center
+                  ${graveyard.length > 0 ? 'border-2 border-purple-400/50' : 'border-2 border-dashed border-white/20 bg-white/5 hover:bg-white/10'}
                 `}
               >
-                <span className="text-sm font-semibold text-purple-300">{graveyard.length}</span>
+                {graveyard.length > 0 ? (
+                  <>
+                    {/* Show the last card in graveyard */}
+                    <div className="absolute inset-0">
+                      <GameCard 
+                        card={graveyard[graveyard.length - 1]} 
+                        zone="graveyard"
+                      />
+                    </div>
+                    {/* Card count badge */}
+                    <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs px-1 rounded-bl z-10">
+                      {graveyard.length}
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-sm font-semibold text-purple-300">0</span>
+                )}
               </div>
             </div>
             
@@ -211,13 +227,28 @@ export default function PlayerZone({
               <div 
                 ref={setExileRef}
                 className={`
-                  w-12 h-16 rounded border-2 border-dashed cursor-pointer transition-all duration-200
+                  w-12 h-16 rounded cursor-pointer transition-all duration-200 relative overflow-hidden
                   ${isExileOver ? 'scale-105 ring-2 ring-orange-400 shadow-lg shadow-orange-400/50' : ''}
-                  ${exile.length > 0 ? 'bg-orange-600/30 border-orange-400/50 hover:bg-orange-600/40' : 'bg-white/5 border-white/20 hover:bg-white/10'}
-                  flex items-center justify-center
+                  ${exile.length > 0 ? 'border-2 border-orange-400/50' : 'border-2 border-dashed border-white/20 bg-white/5 hover:bg-white/10'}
                 `}
               >
-                <span className="text-sm font-semibold text-orange-300">{exile.length}</span>
+                {exile.length > 0 ? (
+                  <>
+                    {/* Show the last card in exile */}
+                    <div className="absolute inset-0">
+                      <GameCard 
+                        card={exile[exile.length - 1]} 
+                        zone="exile"
+                      />
+                    </div>
+                    {/* Card count badge */}
+                    <div className="absolute top-0 right-0 bg-orange-600 text-white text-xs px-1 rounded-bl z-10">
+                      {exile.length}
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-sm font-semibold text-orange-300">0</span>
+                )}
               </div>
             </div>
           </div>
