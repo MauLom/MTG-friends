@@ -2,6 +2,7 @@
 
 import { useGameStore } from '@/lib/store';
 import { Card } from '@/components/ui';
+import { Progress } from '@mantine/core';
 
 export default function LoadingScreen() {
   const { deckImporting, isJoiningRoom, statusMessage } = useGameStore();
@@ -54,9 +55,21 @@ export default function LoadingScreen() {
 
         {/* Progress Indicator */}
         {deckImporting && (
-          <div className="w-full bg-white/20 rounded-full h-2 mb-4">
-            <div className="bg-white h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
-          </div>
+          <Progress
+            value={60}
+            size="sm"
+            radius="xl"
+            animated
+            className="mb-4"
+            styles={{
+              root: {
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              },
+              section: {
+                backgroundColor: 'white',
+              },
+            }}
+          />
         )}
 
         {/* Status Message */}
