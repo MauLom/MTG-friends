@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ActionIcon, Tooltip } from '@mantine/core';
 import { Button, Badge } from '@/components/ui';
 
 interface InteractionIconsProps {
@@ -40,18 +41,27 @@ export default function InteractionIcons({ className = '' }: InteractionIconsPro
   return (
     <div className={`interaction-icons relative ${className}`}>
       {/* Main Toggle Button */}
-      <Button
-        onClick={toggleExpansion}
-        variant="secondary"
-        size="sm"
-        className={`
-          transition-all duration-300 text-lg w-12 h-12 rounded-full
-          ${isExpanded ? 'bg-primary-600/80 rotate-90' : 'bg-white/10 hover:bg-white/20'}
-          hover:scale-110 shadow-lg
-        `}
+      <Tooltip 
+        label={isExpanded ? 'Close interaction menu' : 'Open interaction menu'}
+        position="right"
+        withArrow
       >
-        {isExpanded ? '✕' : '😊'}
-      </Button>
+        <ActionIcon
+          onClick={toggleExpansion}
+          variant="light"
+          color="gray"
+          size="xl"
+          radius="xl"
+          aria-label={isExpanded ? 'Close interaction menu' : 'Open interaction menu'}
+          className={`
+            transition-all duration-300 text-lg
+            ${isExpanded ? 'rotate-90' : ''}
+            hover:scale-110 shadow-lg
+          `}
+        >
+          {isExpanded ? '✕' : '😊'}
+        </ActionIcon>
+      </Tooltip>
 
       {/* Expanded Emoji Grid */}
       {isExpanded && (
@@ -62,18 +72,24 @@ export default function InteractionIcons({ className = '' }: InteractionIconsPro
         `}>
           <div className="grid grid-cols-4 gap-2">
             {INTERACTION_EMOJIS.map((emoji) => (
-              <button
+              <Tooltip
                 key={emoji.key}
-                onClick={() => handleEmojiClick(emoji)}
-                className={`
-                  w-10 h-10 text-lg transition-all duration-200 rounded-lg
-                  ${lastUsed === emoji.key ? 'ring-2 ring-primary-400 bg-primary-600/30' : 'bg-white/10'}
-                  hover:scale-125 hover:bg-white/20
-                `}
-                title={emoji.label}
+                label={emoji.label}
+                position="bottom"
+                withArrow
               >
-                {emoji.emoji}
-              </button>
+                <ActionIcon
+                  onClick={() => handleEmojiClick(emoji)}
+                  variant={lastUsed === emoji.key ? 'filled' : 'light'}
+                  color={lastUsed === emoji.key ? 'blue' : 'gray'}
+                  size="lg"
+                  radius="md"
+                  aria-label={emoji.label}
+                  className="text-lg transition-all duration-200 hover:scale-125"
+                >
+                  {emoji.emoji}
+                </ActionIcon>
+              </Tooltip>
             ))}
           </div>
           
