@@ -9,6 +9,17 @@ interface GameCardProps {
   zone: string;
 }
 
+/**
+ * Card dimensions constants for consistent sizing and aspect ratio preservation
+ * These fixed dimensions prevent Cumulative Layout Shift (CLS) during image loading
+ * and are essential for virtualization list calculations
+ */
+export const CARD_DIMENSIONS = {
+  width: 60,
+  height: 84,
+  aspectRatio: 60 / 84, // ~0.714 (standard MTG card aspect ratio)
+} as const;
+
 export default function GameCard({ card, zone }: GameCardProps) {
   const [imageError, setImageError] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -34,13 +45,22 @@ export default function GameCard({ card, zone }: GameCardProps) {
 
   return (
     <div className="relative">
+      {/* 
+        Fixed-size card container with aspect ratio box to prevent CLS
+        The explicit dimensions ensure predictable layout before and after image load
+        This structure is virtualization-ready: each card has a known, fixed height
+      */}
       <div
         ref={drag as any}
         onDoubleClick={handleDoubleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
+        style={{ 
+          width: `${CARD_DIMENSIONS.width}px`, 
+          height: `${CARD_DIMENSIONS.height}px` 
+        }}
         className={`
-          card w-fit h-fit bg-gradient-to-br from-slate-600 to-slate-700 
+          card bg-gradient-to-br from-slate-600 to-slate-700 
           border-2 border-slate-500 rounded-lg cursor-pointer 
           transition-all duration-300 relative select-none overflow-hidden
           ${isDragging ? 
@@ -51,18 +71,22 @@ export default function GameCard({ card, zone }: GameCardProps) {
           ${!isDragging ? 'hover:ring-2 hover:ring-blue-400/30' : ''}
         `}
       >
+        {/* 
+          Aspect ratio box ensures consistent dimensions even before image loads
+          This prevents layout shift (CLS) when images are lazy-loaded or slow to fetch
+        */}
         {showImage ? (
           <img
             src={card.imageUrl}
             alt={card.name}
-            style={{ width: '60px', height: '84px' }}
-            className="object-cover rounded-lg"
+            width={CARD_DIMENSIONS.width}
+            height={CARD_DIMENSIONS.height}
+            className="object-cover rounded-lg w-full h-full"
             onError={handleImageError}
           />
         ) : (
           <div 
-            style={{ width: '60px', height: '84px' }}
-            className="card-name p-1 break-words leading-tight text-xs text-center flex items-center justify-center"
+            className="card-name p-1 break-words leading-tight text-xs text-center flex items-center justify-center w-full h-full"
           >
             {card.faceDown ? '???' : card.name}
           </div>

@@ -3,7 +3,7 @@
 import { useDrop } from 'react-dnd';
 import { useGameStore } from '@/lib/store';
 import { Card } from '@/types/game';
-import GameCard from './GameCard';
+import GameCard, { CARD_DIMENSIONS } from './GameCard';
 
 interface GameZoneProps {
   id: string;
@@ -11,6 +11,20 @@ interface GameZoneProps {
   cards: Card[];
   className?: string;
 }
+
+/**
+ * Virtualization-ready zone constants
+ * These values define predictable container heights for virtualization libraries
+ * like react-virtualized or react-virtuoso to calculate scroll and windowing
+ */
+const ZONE_LAYOUT = {
+  minHeight: 60, // Minimum container height for empty zones
+  cardHeight: CARD_DIMENSIONS.height, // 84px - standard card height
+  cardWidth: CARD_DIMENSIONS.width, // 60px - standard card width
+  gap: 8, // Gap between cards in pixels (gap-2 = 0.5rem = 8px)
+  handGap: 4, // Smaller gap for hand zone (gap-1 = 0.25rem = 4px)
+  padding: 16, // Zone padding (p-4 = 1rem = 16px)
+} as const;
 
 export default function GameZone({ id, title, cards, className = '' }: GameZoneProps) {
   const { moveCard } = useGameStore();
@@ -47,7 +61,30 @@ export default function GameZone({ id, title, cards, className = '' }: GameZoneP
       `}>
         {title}
       </h3>
-      <div className={`card-container ${id === 'hand' ? 'flex flex-nowrap gap-1 overflow-x-auto' : 'flex flex-wrap gap-2'} min-h-[60px]`}>
+      
+      {/* 
+        VIRTUALIZATION BOUNDARY: This container is where react-virtualized or react-virtuoso would be integrated
+        Current implementation renders all cards, but the structure is ready for windowing
+        
+        Key integration points:
+        1. Replace this div with <VirtualizedList> or <Virtuoso>
+        2. Use ZONE_LAYOUT constants for itemSize calculations
+        3. Pass cards array as data prop
+        4. Render GameCard as itemContent/rowRenderer
+        5. For hand zone: use horizontal scrolling mode with overscan
+        6. For battlefield/graveyard: use grid layout with calculated row heights
+        
+        Example with react-virtuoso:
+        <Virtuoso
+          data={cards}
+          itemContent={(index, card) => <GameCard key={card.id} card={card} zone={id} />}
+          style={{ height: 'auto', minHeight: `${ZONE_LAYOUT.minHeight}px` }}
+        />
+      */}
+      <div 
+        className={`card-container ${id === 'hand' ? 'flex flex-nowrap gap-1 overflow-x-auto' : 'flex flex-wrap gap-2'}`}
+        style={{ minHeight: `${ZONE_LAYOUT.minHeight}px` }}
+      >
         {cards.map((card) => (
           <GameCard key={card.id} card={card} zone={id} />
         ))}
@@ -60,3 +97,9 @@ export default function GameZone({ id, title, cards, className = '' }: GameZoneP
     </div>
   );
 }
+
+/**
+ * Export layout constants for use in virtualization implementations
+ * These constants ensure consistent sizing across the application
+ */
+export { ZONE_LAYOUT };
