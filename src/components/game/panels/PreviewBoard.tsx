@@ -7,6 +7,7 @@ import { Card } from '@/components/ui';
 export interface PreviewBoardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Position of the preview board (left or right)
+   * Reserved for future use when logic is implemented
    */
   position?: 'left' | 'right';
   className?: string;
@@ -18,7 +19,7 @@ export interface PreviewBoardProps extends React.HTMLAttributes<HTMLDivElement> 
  * No logic implemented - purely structural
  */
 export default function PreviewBoard({ 
-  position = 'left', 
+  position = 'left', // eslint-disable-line @typescript-eslint/no-unused-vars
   className, 
   ...props 
 }: PreviewBoardProps) {
