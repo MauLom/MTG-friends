@@ -25,7 +25,7 @@ export default function GameScreen() {
       <GameHeader />
       <PlayersArea />
       <GameBoard />
-      {/* <Chat /> */}
+      <Chat />
     </div>
   );
 }

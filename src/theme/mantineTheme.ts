@@ -132,7 +132,7 @@ export const mantineTheme = createTheme({
       styles: {
         root: {
           transition: 'all 300ms ease',
-          '&:focus-visible': {
+          '&:focusVisible': {
             outline: '3px solid var(--mantine-color-primary-4)',
             outlineOffset: '2px',
           },

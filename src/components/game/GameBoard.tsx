@@ -7,6 +7,8 @@ import PlayerZone from './PlayerZone';
 import TurnTracker from './TurnTracker';
 import MenuPanel from './MenuPanel';
 import InteractionIcons from './InteractionIcons';
+import ActionsPanel from './panels/ActionsPanel';
+import { HudCenter } from '@/components/ui';
 import { useGameStore } from '@/lib/store';
 
 export default function GameBoard() {
@@ -16,11 +18,17 @@ export default function GameBoard() {
     playerGraveyard,  
     playerBattlefield,
     playerExile,
-    players
+    players,
+    gameState
   } = useGameStore();
 
-  // Mock opponent data - in real app this would come from game state
+  // Get opponents and current turn player
   const opponents = players.filter(p => p.name !== playerName);
+  const currentTurnPlayer = gameState?.currentTurnIndex !== undefined ? 
+    players[gameState.currentTurnIndex] : 
+    null;
+  
+  // Mock opponent data - in real app this would come from game state
   const mockOpponentData = {
     hand: [], // Opponents' hands are hidden
     graveyard: [],
@@ -28,94 +36,140 @@ export default function GameBoard() {
     battlefield: []
   };
 
+  // Split opponents for left and right columns (max 2 each)
+  const leftOpponents = opponents.slice(0, 2);
+  const rightOpponents = opponents.slice(2, 4);
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="game-board relative h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+      <div className="game-board h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         {/* Background pattern for tabletop feel */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),rgba(255,255,255,0.02))]"></div>
           <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(255,255,255,0.05)_49%,rgba(255,255,255,0.05)_51%,transparent_52%)] bg-[length:20px_20px]"></div>
         </div>
 
-        {/* Top UI Layer */}
-        <div className="absolute top-4 left-4 right-4 z-40 flex justify-between items-start">
-          {/* Top Left - Interaction Icons */}
-          <InteractionIcons />
+        {/* Main Grid Layout: 3 rows x 3 columns with custom proportions */}
+        <div className="grid h-full gap-2 p-2" style={{
+          gridTemplateRows: '1fr 2fr 1fr', // Top/Bottom smaller, Middle larger
+          gridTemplateColumns: '10% 80% 10%' // For rows 1&3: narrow sides, wide center
+        }}>
           
-          {/* Top Right - Menu Panel */}
-          <MenuPanel />
-        </div>
+          {/* ========== ROW 1: TOP ========== */}
+          {/* Top Left - Platform Actions */}
+          <div className="flex flex-col justify-start items-start gap-2">
+            <InteractionIcons />
+          </div>
 
-        {/* Opponents Area - Top */}
-        <div className="absolute top-16 left-4 right-4 z-20">
-          <div className="flex gap-4 justify-center">
-            {opponents.map((opponent) => (
-              <PlayerZone
-                key={opponent.socketId}
-                playerName={opponent.name}
-                isOpponent={true}
-                hand={mockOpponentData.hand}
-                graveyard={mockOpponentData.graveyard}
-                exile={mockOpponentData.exile}
-                battlefield={mockOpponentData.battlefield}
-                className="max-w-xs"
-              />
-            ))}
-            {opponents.length === 0 && (
-              <div className="text-center text-white/50 py-8">
-                <p className="text-sm">Waiting for opponents...</p>
+          {/* Top Center - Current Turn Player (80% width) */}
+          <div className="flex justify-center items-start">
+            {currentTurnPlayer ? (
+              <div className="current-turn-area w-full">
+                <PlayerZone
+                  playerName={currentTurnPlayer.name}
+                  isOpponent={currentTurnPlayer.name !== playerName}
+                  hand={currentTurnPlayer.name === playerName ? playerHand : []} // Solo visible si es el jugador actual
+                  graveyard={currentTurnPlayer.name === playerName ? playerGraveyard : mockOpponentData.graveyard}
+                  exile={currentTurnPlayer.name === playerName ? playerExile : mockOpponentData.exile}
+                  battlefield={currentTurnPlayer.name === playerName ? playerBattlefield : mockOpponentData.battlefield} // Su tablero personal
+                  className="max-w-4xl mx-auto" // Larger since we have 80% width
+                />
+              </div>
+            ) : (
+              <div className="text-center text-white/50 p-4">
+                <p className="text-sm">No active turn</p>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Central Battlefield */}
-        <div className="absolute top-32 left-4 right-4 bottom-48 z-20">
-          <div className="h-full flex items-center justify-center">
-            {/* Central Turn Tracker */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50">
-              <TurnTracker />
+          {/* Top Right - Platform Actions */}
+          <div className="flex flex-col justify-start items-end gap-2">
+            <MenuPanel />
+          </div>
+
+          {/* ========== ROW 2: MIDDLE (Override grid for 33-33-33) ========== */}
+          {/* We'll use a subgrid here to override the 10-80-10 for this row */}
+          <div className="col-span-3 grid grid-cols-3 gap-2">
+            {/* Middle Left - Opponents (33%) */}
+            <div className="flex flex-col justify-center gap-4 p-2">
+              {leftOpponents.map((opponent) => (
+                <div key={opponent.socketId} className="opponent-area">
+                  <PlayerZone
+                    playerName={opponent.name}
+                    isOpponent={true}
+                    hand={mockOpponentData.hand} // Hidden from view, just count
+                    graveyard={mockOpponentData.graveyard}
+                    exile={mockOpponentData.exile}
+                    battlefield={mockOpponentData.battlefield} // Their personal board (visible)
+                    className="scale-90 origin-center" // Slightly larger than before
+                  />
+                </div>
+              ))}
+              {leftOpponents.length === 0 && (
+                <div className="text-center text-white/30 p-4">
+                  <p className="text-xs">No opponents</p>
+                </div>
+              )}
             </div>
 
-            {/* Main Battlefield Zone */}
-            <GameZone
-              id="battlefield"
-              title="Battlefield"
-              cards={playerBattlefield}
-              className={`
-                w-full h-full 
-                bg-gradient-to-br from-emerald-900/10 via-slate-800/20 to-emerald-900/10
-                backdrop-blur-sm border-2 border-emerald-500/20
-                shadow-2xl shadow-emerald-500/10
-                hover:border-emerald-400/30 hover:shadow-emerald-400/20
-                transition-all duration-500
-              `}
-            />
+            {/* Middle Center - Game Info Hub (HUD only) */}
+            <div className="flex flex-col justify-center items-center relative">
+              {/* HUD Center - Now includes phase tracking and turn counter */}
+              <HudCenter />
+            </div>
+
+            {/* Middle Right - Opponents (33%) */}
+            <div className="flex flex-col justify-center gap-4 p-2">
+              {rightOpponents.map((opponent) => (
+                <div key={opponent.socketId} className="opponent-area">
+                  <PlayerZone
+                    playerName={opponent.name}
+                    isOpponent={true}
+                    hand={mockOpponentData.hand} // Hidden from view, just count
+                    graveyard={mockOpponentData.graveyard}
+                    exile={mockOpponentData.exile}
+                    battlefield={mockOpponentData.battlefield} // Their personal board (visible)
+                    className="scale-90 origin-center" // Slightly larger than before
+                  />
+                </div>
+              ))}
+              {rightOpponents.length === 0 && (
+                <div className="text-center text-white/30 p-4">
+                  <p className="text-xs">No opponents</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Current Player Area - Bottom */}
-        <div className="absolute bottom-4 left-4 right-4 z-20">
-          <PlayerZone
-            playerName={playerName || 'You'}
-            isCurrentPlayer={true}
-            hand={playerHand}
-            graveyard={playerGraveyard}
-            exile={playerExile}
-            battlefield={[]} // Player's creatures are on the main battlefield
-          />
-        </div>
+          {/* ========== ROW 3: BOTTOM ========== */}
+          {/* Bottom Left - Game Actions */}
+          <div className="flex flex-col justify-end items-start">
+            <ActionsPanel />
+          </div>
 
-        {/* Ambient lighting effects */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Subtle glow from center */}
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-radial from-blue-500/5 to-transparent rounded-full blur-3xl"></div>
-          
-          {/* Corner highlights */}
-          <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-radial from-purple-500/5 to-transparent rounded-full blur-2xl"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-orange-500/5 to-transparent rounded-full blur-2xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-radial from-green-500/5 to-transparent rounded-full blur-2xl"></div>
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-radial from-red-500/5 to-transparent rounded-full blur-2xl"></div>
+          {/* Bottom Center - Current Player (80% width) */}
+          <div className="flex justify-center items-end">
+            <div className="current-player-area w-full">
+              <PlayerZone
+                playerName={playerName || 'You'}
+                isCurrentPlayer={true}
+                hand={playerHand} // Solo el jugador actual ve su mano
+                graveyard={playerGraveyard}
+                exile={playerExile}
+                battlefield={playerBattlefield} // Su tablero personal donde baja cartas
+                className="w-full max-w-6xl mx-auto" // Take full advantage of the 80% width
+              />
+            </div>
+          </div>
+
+          {/* Bottom Right - Game Actions */}
+          <div className="flex flex-col justify-end items-end">
+            {/* TODO: Add game-specific actions like Pass Turn, Priority, etc */}
+            <div className="text-white/30 text-xs p-2">
+              Game Actions
+            </div>
+          </div>
+
         </div>
       </div>
     </DndProvider>
