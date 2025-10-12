@@ -26,7 +26,7 @@ export default function TelemetryDemoPage() {
           </Title>
           <Alert icon={<Info size={16} />} color="blue" variant="light">
             <Text size="sm">
-              Open your browser&apos;s Developer Console (F12 or Cmd+Option+I on Mac) and interact with the components below.
+              Open your browser&apos;s Developer Console (F12, Cmd+Option+I on Mac, or Right-click → Inspect) and interact with the components below.
               Look for <Text span fw={600} c="blue">[Telemetry]</Text> messages to see the tracking events.
             </Text>
           </Alert>
