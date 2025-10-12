@@ -48,19 +48,24 @@ function MyGame() {
 ## Responsive Behavior
 
 - **Desktop (≥768px):** 
-  - Row 1: 3 columns (25% | 50% | 25%)
-  - Row 2: 3 equal columns (33% each)
-  - Row 3: Full width
+  - Row 1: 3 columns (25% | 50% | 25%) - info | onTurn | actions
+  - Row 2: 3 equal columns (33% each) - prevLeft | hudCenter | prevRight
+  - Row 3: Full width - self
   
-- **Tablet (≥640px, <768px):**
-  - Row 1: 3 columns (25% | 50% | 25%)
-  - Row 2: Stacked vertically
-  - Row 3: Full width
+- **Tablet (640px-767px):**
+  - Row 1: 2 columns + full width - onTurn (full width) → actions | info (two columns)
+  - Row 2: Stacked vertically - hudCenter → prevLeft → prevRight
+  - Row 3: Full width - self
 
 - **Mobile (<640px):**
-  - Row 1: Stacked vertically (onTurn first, then actions, then info)
-  - Row 2: Stacked vertically
-  - Row 3: Full width
+  - Single-column ordered stack: hudCenter → onTurn → actions → self → prevLeft → prevRight → info
+  - All hit areas ≥44px minimum
+  - No horizontal overflow
+
+### Accessibility Features
+- Minimum touch target size of 44px for all interactive elements
+- Horizontal overflow prevention on all breakpoints
+- Semantic ordering prioritizes game state visibility on mobile
 
 ## Notes
 
