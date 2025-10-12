@@ -188,6 +188,32 @@
     }
   }
 
+  /* Drop zone styles for drag and drop */
+  [data-zone] {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  [data-zone]:hover {
+    background: rgba(102, 126, 234, 0.08);
+    border-color: rgba(102, 126, 234, 0.4);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+  }
+
+  [data-zone]:focus-visible {
+    outline: 3px solid var(--glow-primary-strong);
+    outline-offset: 2px;
+    background: rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-zone]:hover,
+    [data-zone]:focus-visible {
+      transition: none;
+    }
+  }
+
   /* Keyframes defined in Tailwind config will be automatically available */
 }
 

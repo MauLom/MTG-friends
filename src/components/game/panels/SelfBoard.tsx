@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Text } from '@mantine/core';
+import { Box, Text, SimpleGrid } from '@mantine/core';
 import { Card } from '@/components/ui';
 
 export interface SelfBoardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,6 +12,7 @@ export interface SelfBoardProps extends React.HTMLAttributes<HTMLDivElement> {
  * SelfBoard - Shell component for the current player's board
  * Row 3 - Full width bottom position
  * No logic implemented - purely structural
+ * Zones are defined with data-zone attributes for future DnD integration
  */
 export default function SelfBoard({ className, ...props }: SelfBoardProps) {
   return (
@@ -23,11 +24,62 @@ export default function SelfBoard({ className, ...props }: SelfBoardProps) {
       aria-label="Self Board"
       {...props}
     >
-      <Box>
-        <Text size="sm" c="dimmed">
-          Self Board
-        </Text>
-      </Box>
+      <SimpleGrid cols={5} spacing="xs">
+        {/* Hand Zone */}
+        <Box
+          data-zone="hand"
+          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
+          tabIndex={0}
+          role="region"
+          aria-label="Hand zone"
+        >
+          <Text size="xs" c="dimmed">Hand</Text>
+        </Box>
+
+        {/* Battlefield Zone */}
+        <Box
+          data-zone="battlefield"
+          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
+          tabIndex={0}
+          role="region"
+          aria-label="Battlefield zone"
+        >
+          <Text size="xs" c="dimmed">Battlefield</Text>
+        </Box>
+
+        {/* Command Zone */}
+        <Box
+          data-zone="command"
+          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
+          tabIndex={0}
+          role="region"
+          aria-label="Command zone"
+        >
+          <Text size="xs" c="dimmed">Command</Text>
+        </Box>
+
+        {/* Graveyard Zone */}
+        <Box
+          data-zone="graveyard"
+          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
+          tabIndex={0}
+          role="region"
+          aria-label="Graveyard zone"
+        >
+          <Text size="xs" c="dimmed">Graveyard</Text>
+        </Box>
+
+        {/* Exile Zone */}
+        <Box
+          data-zone="exile"
+          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
+          tabIndex={0}
+          role="region"
+          aria-label="Exile zone"
+        >
+          <Text size="xs" c="dimmed">Exile</Text>
+        </Box>
+      </SimpleGrid>
     </Card>
   );
 }
