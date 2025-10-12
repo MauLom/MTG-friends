@@ -100,7 +100,7 @@ export default function TurnTrackerDemoPage() {
               </div>
             </div>
             <Text size="xs" c="dimmed" mt="md">
-              📖 Full documentation available in <code className="text-primary-400">THEME_TOKENS.md</code>
+              📖 Full documentation available in <code style={{ color: 'var(--mantine-color-primary-4)' }}>THEME_TOKENS.md</code>
             </Text>
           </Card>
         </div>
