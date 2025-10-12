@@ -35,6 +35,8 @@ export default function Card({
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(15px)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: 'var(--card-shadow-idle)',
+        position: 'relative' as const,
       };
     }
     
@@ -44,6 +46,7 @@ export default function Card({
         backgroundColor: 'rgba(255, 255, 255, 0.05)',
         backdropFilter: 'blur(10px)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: 'var(--shadow-soft)',
       };
     }
     
@@ -52,6 +55,7 @@ export default function Card({
         ...baseStyle,
         backgroundColor: 'var(--mantine-color-dark-8)',
         border: '1px solid var(--mantine-color-dark-4)',
+        boxShadow: 'var(--shadow-medium)',
       };
     }
     
@@ -62,7 +66,10 @@ export default function Card({
     <Paper
       p={paddingMap[padding]}
       radius="xl"
-      className={cn('transition-all duration-300', className)}
+      className={cn(
+        'transition-all duration-300 tabletop-card',
+        className
+      )}
       style={customStyle}
       {...props}
     >

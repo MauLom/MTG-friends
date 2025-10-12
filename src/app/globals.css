@@ -8,11 +8,71 @@
 @tailwind utilities;
 
 @layer base {
+  /* Tabletop theme custom properties */
+  :root {
+    /* Tabletop surface colors */
+    --tabletop-bg-start: #0f1419;
+    --tabletop-bg-end: #1a1f2e;
+    --tabletop-surface: rgba(20, 25, 35, 0.85);
+    
+    /* Glow colors */
+    --glow-primary: rgba(102, 126, 234, 0.4);
+    --glow-primary-strong: rgba(102, 126, 234, 0.6);
+    --glow-accent: rgba(139, 92, 246, 0.3);
+    
+    /* Shadow depths */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --shadow-deep: 0 8px 24px rgba(0, 0, 0, 0.35);
+    
+    /* Card wrapper shadows with glow */
+    --card-shadow-idle: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px var(--glow-primary);
+    
+    /* Reflection overlay */
+    --reflection-gradient: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(0, 0, 0, 0.05) 100%
+    );
+  }
+
   body {
     color: var(--foreground);
     min-height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    /* Enhanced tabletop gradient with subtle texture */
+    background: 
+      radial-gradient(ellipse at top, rgba(102, 126, 234, 0.15), transparent 50%),
+      linear-gradient(135deg, var(--tabletop-bg-start), var(--tabletop-bg-end));
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    position: relative;
+  }
+
+  /* Subtle texture overlay for tabletop feel */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  body > * {
+    position: relative;
+    z-index: 2;
   }
 }
 
@@ -21,20 +81,59 @@
     text-wrap: balance;
   }
 
-  /* Glass effect utilities */
+  /* Glass effect utilities with reflections */
   .glass-light {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    position: relative;
+  }
+
+  .glass-light::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--reflection-gradient);
+    pointer-events: none;
+    border-radius: inherit;
   }
 
   .glass-medium {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px);
+    position: relative;
+  }
+
+  .glass-medium::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--reflection-gradient);
+    pointer-events: none;
+    border-radius: inherit;
   }
 
   .glass-dark {
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
+  }
+
+  /* Tabletop card wrapper utilities */
+  .tabletop-card {
+    box-shadow: var(--card-shadow-idle);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tabletop-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tabletop-card:hover {
+      box-shadow: var(--card-shadow-hover);
+    }
   }
 }
 
@@ -54,6 +153,39 @@
 
   .animate-scale-in {
     animation: scaleIn 0.2s ease-out;
+  }
+
+  /* Glow pulse for active phase - respects reduced motion */
+  @media (prefers-reduced-motion: no-preference) {
+    .glow-pulse {
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 
+          0 0 10px var(--glow-primary),
+          0 0 20px var(--glow-primary),
+          inset 0 0 10px var(--glow-primary);
+        opacity: 1;
+      }
+      50% {
+        box-shadow: 
+          0 0 20px var(--glow-primary-strong),
+          0 0 40px var(--glow-primary-strong),
+          inset 0 0 15px var(--glow-primary-strong);
+        opacity: 0.9;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glow-pulse {
+      box-shadow: 
+        0 0 15px var(--glow-primary),
+        0 0 30px var(--glow-primary),
+        inset 0 0 12px var(--glow-primary);
+    }
   }
 
   /* Keyframes defined in Tailwind config will be automatically available */
