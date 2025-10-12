@@ -63,7 +63,7 @@ export default function TurnTracker({ className = '' }: TurnTrackerProps) {
             className={`
               transition-all duration-300 text-xs
               ${currentPhase === phase.key && isMyTurn ? 
-                'ring-2 ring-primary-400 shadow-lg shadow-primary-400/25 animate-pulse' : 
+                'ring-2 ring-primary-400 glow-pulse' : 
                 ''
               }
               ${!isMyTurn ? 'opacity-50' : 'hover:scale-105'}
@@ -94,7 +94,7 @@ export default function TurnTracker({ className = '' }: TurnTrackerProps) {
       {/* Current Phase Indicator */}
       {isMyTurn && (
         <div className="absolute -top-2 -right-2">
-          <div className="w-4 h-4 bg-primary-500 rounded-full animate-ping"></div>
+          <div className="w-4 h-4 bg-primary-500 rounded-full motion-safe:animate-ping"></div>
           <div className="absolute top-0 right-0 w-4 h-4 bg-primary-600 rounded-full"></div>
         </div>
       )}
