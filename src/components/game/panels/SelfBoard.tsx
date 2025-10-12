@@ -19,6 +19,8 @@ export default function SelfBoard({ className, ...props }: SelfBoardProps) {
       variant="glass" 
       padding="md" 
       className={className}
+      role="region"
+      aria-label="Self Board"
       {...props}
     >
       <Box>

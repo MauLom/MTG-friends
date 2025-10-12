@@ -8,6 +8,7 @@ export { default as Input } from './inputs/Input';
 export { default as Card } from './layout/Card';
 export { default as Stack } from './layout/Stack';
 export { default as GameStage } from './layout/GameStage';
+export { default as SkipLinks } from './layout/SkipLinks';
 
 // Feedback
 export { default as Badge } from './feedback/Badge';

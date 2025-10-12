@@ -19,6 +19,8 @@ export default function OnTurnBoard({ className, ...props }: OnTurnBoardProps) {
       variant="glass" 
       padding="md" 
       className={className}
+      role="region"
+      aria-label="On-Turn Board"
       {...props}
     >
       <Center>

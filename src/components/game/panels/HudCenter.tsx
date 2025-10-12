@@ -42,13 +42,15 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
       variant="glass" 
       padding="md" 
       className={className}
+      role="region"
+      aria-label="HUD Center"
       {...props}
     >
       <div className="space-y-4">
         {/* Top Row: Phase Indicator & Pass Turn Button */}
         <div className="flex items-center justify-between gap-4">
           {/* Phase Indicator */}
-          <div className="flex-1">
+          <div className="flex-1" role="status" aria-label="Current turn phase">
             <Text size="xs" c="dimmed" className="mb-2">
               Turn Phase
             </Text>
@@ -59,6 +61,7 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
                   variant="secondary"
                   size="sm"
                   className="text-xs"
+                  aria-label={`Phase ${phase}`}
                 >
                   {phase}
                 </Badge>
@@ -72,6 +75,7 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
             size="sm"
             disabled
             className="opacity-50 cursor-not-allowed"
+            aria-label="Pass turn (currently disabled)"
           >
             PASS TURN
           </Button>
@@ -80,7 +84,7 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
         {/* Middle Row: Life Summary Grid & Timer */}
         <div className="flex items-start justify-between gap-4">
           {/* Life Summary Grid */}
-          <div className="flex-1">
+          <div className="flex-1" role="region" aria-label="Player life totals">
             <Text size="xs" c="dimmed" className="mb-2">
               Life Totals
             </Text>
@@ -91,6 +95,8 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
                   variant="glass"
                   padding="sm"
                   className="transition-all duration-300 hover:scale-105"
+                  role="status"
+                  aria-label={`${player.name} has ${player.life} life`}
                 >
                   <Group gap="xs" className="justify-between">
                     <div className="flex items-center gap-2">
@@ -99,12 +105,13 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
                         thickness={3}
                         sections={[{ value: (player.life / STARTING_LIFE) * 100, color: player.color }]}
                         label={
-                          <Text size="xs" className="font-bold text-center">
+                          <Text size="xs" className="font-bold text-center" aria-hidden="true">
                             {player.life}
                           </Text>
                         }
+                        aria-hidden="true"
                       />
-                      <Text size="xs" className="font-semibold">
+                      <Text size="xs" className="font-semibold" aria-hidden="true">
                         {player.name}
                       </Text>
                     </div>
@@ -125,12 +132,12 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
           </div>
 
           {/* Timer */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" role="timer" aria-label="Game timer">
             <Text size="xs" c="dimmed" className="mb-2">
               Timer
             </Text>
             <Card variant="glass" padding="sm" className="text-center">
-              <Text size="xl" className="font-mono font-bold">
+              <Text size="xl" className="font-mono font-bold" aria-label="0 minutes 0 seconds">
                 00:00
               </Text>
             </Card>
@@ -138,19 +145,20 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
         </div>
 
         {/* Bottom Row: Dice Tray */}
-        <div>
+        <div role="region" aria-label="Dice tray">
           <Text size="xs" c="dimmed" className="mb-2">
             Dice Tray
           </Text>
           <Card variant="glass" padding="sm">
             <Stack gap="xs">
               {/* Dice Controls */}
-              <Group gap="xs">
+              <Group gap="xs" role="group" aria-label="Dice controls">
                 <Button
                   variant="secondary"
                   size="sm"
                   disabled
                   className="text-xs"
+                  aria-label="Add d6 die (currently disabled)"
                 >
                   Add d6
                 </Button>
@@ -159,25 +167,26 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
                   size="sm"
                   disabled
                   className="text-xs"
+                  aria-label="Add d20 die (currently disabled)"
                 >
                   Add d20
                 </Button>
               </Group>
 
               {/* Dice History Chips */}
-              <div>
+              <div role="log" aria-label="Dice roll history">
                 <Text size="xs" c="dimmed" className="mb-1">
                   History
                 </Text>
                 <Group gap="xs">
                   {/* Placeholder history chips */}
-                  <Badge variant="info" size="sm" className="text-xs">
+                  <Badge variant="info" size="sm" className="text-xs" aria-label="d6 roll: 4">
                     d6: 4
                   </Badge>
-                  <Badge variant="info" size="sm" className="text-xs">
+                  <Badge variant="info" size="sm" className="text-xs" aria-label="d20 roll: 15">
                     d20: 15
                   </Badge>
-                  <Badge variant="secondary" size="sm" className="text-xs opacity-50">
+                  <Badge variant="secondary" size="sm" className="text-xs opacity-50" aria-label="Empty slot">
                     Empty
                   </Badge>
                 </Group>
