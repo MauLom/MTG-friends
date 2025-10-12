@@ -119,7 +119,7 @@ export default function PlayerZone({
         {/* Top row - Player info and utility zones */}
         <div className="flex justify-between items-start">
           {/* Left side - Library and utility zones */}
-          <div className="player-zones flex gap-3">
+          {/* <div className="player-zones flex gap-3">
             <div className="deck-area text-center">
               <h4 className="text-sm font-semibold mb-2 text-white/80">Library</h4>
               <DeckComponent className="w-fit" />
@@ -139,20 +139,7 @@ export default function PlayerZone({
                 className="w-20 min-h-28 hover:shadow-lg hover:shadow-orange-500/25 transition-shadow"
               />
             </div>
-          </div>
-          
-          {/* Right side - Player info */}
-          <div className="player-info flex flex-col items-center gap-2">
-            <div className="text-center">
-              <div className="text-sm font-semibold text-white mb-1">{playerName}</div>
-              <div className="text-xs text-white/70">
-                Cards in hand: {hand.length}
-              </div>
-              <div className="text-xs text-white/50">
-                Library: {/* TODO: Connect to library count */}52
-              </div>
-            </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Middle row - Battlefield */}

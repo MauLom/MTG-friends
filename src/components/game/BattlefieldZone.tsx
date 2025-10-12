@@ -85,7 +85,7 @@ export default function BattlefieldZone({ cards, playerName, className = '' }: B
       ref={setCombinedRef}
       className={`
         battlefield-zone relative 
-        bg-green-900/20 border-2 border-dashed border-green-400/30 
+        bg-green-900/20 
         rounded-xl transition-colors
         ${isOver ? 'border-green-400 bg-green-400/20' : ''} 
         ${className}
@@ -93,9 +93,9 @@ export default function BattlefieldZone({ cards, playerName, className = '' }: B
       style={{ minHeight: '200px' }}
     >
       {/* Simple title */}
-      <div className="absolute top-3 left-4 text-sm text-green-300/80 z-50">
+      {/* <div className="absolute top-3 left-4 text-sm text-green-300/80 z-50">
         Battlefield ({cards.length})
-      </div>
+      </div> */}
       
       {/* Cards with absolute positioning */}
       <div className="absolute inset-0 mt-12">

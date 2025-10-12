@@ -22,7 +22,7 @@ export default function GameScreen() {
 
   return (
     <div className="h-screen grid grid-rows-[auto_auto_1fr_auto] grid-areas-[header_players_board_chat]">
-      <GameHeader />
+      {/*<GameHeader />*/}
       <PlayersArea />
       <GameBoard />
       {/* <Chat /> */}
