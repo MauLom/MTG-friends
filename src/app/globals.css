@@ -189,27 +189,27 @@
   }
 
   /* Drop zone styles for drag and drop */
-  [data-zone] {
+  .drop-zone {
     position: relative;
     transition: all 0.3s ease;
   }
 
-  [data-zone]:hover {
-    background: rgba(102, 126, 234, 0.08);
-    border-color: rgba(102, 126, 234, 0.4);
-    box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+  .drop-zone:hover {
+    background: var(--glow-primary);
+    border-color: var(--glow-primary-strong);
+    box-shadow: 0 0 15px var(--glow-primary);
   }
 
-  [data-zone]:focus-visible {
+  .drop-zone:focus-visible {
     outline: 3px solid var(--glow-primary-strong);
     outline-offset: 2px;
-    background: rgba(102, 126, 234, 0.1);
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    background: var(--glow-primary);
+    box-shadow: 0 0 20px var(--glow-primary);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-zone]:hover,
-    [data-zone]:focus-visible {
+    .drop-zone:hover,
+    .drop-zone:focus-visible {
       transition: none;
     }
   }

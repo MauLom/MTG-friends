@@ -8,6 +8,18 @@ export interface SelfBoardProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
+// Zone types for SelfBoard
+const ZONES = [
+  { id: 'hand', label: 'Hand' },
+  { id: 'battlefield', label: 'Battlefield' },
+  { id: 'command', label: 'Command' },
+  { id: 'graveyard', label: 'Graveyard' },
+  { id: 'exile', label: 'Exile' },
+] as const;
+
+// Shared zone styling
+const ZONE_CLASSES = 'drop-zone p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center';
+
 /**
  * SelfBoard - Shell component for the current player's board
  * Row 3 - Full width bottom position
@@ -25,60 +37,18 @@ export default function SelfBoard({ className, ...props }: SelfBoardProps) {
       {...props}
     >
       <SimpleGrid cols={5} spacing="xs">
-        {/* Hand Zone */}
-        <Box
-          data-zone="hand"
-          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
-          tabIndex={0}
-          role="region"
-          aria-label="Hand zone"
-        >
-          <Text size="xs" c="dimmed">Hand</Text>
-        </Box>
-
-        {/* Battlefield Zone */}
-        <Box
-          data-zone="battlefield"
-          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
-          tabIndex={0}
-          role="region"
-          aria-label="Battlefield zone"
-        >
-          <Text size="xs" c="dimmed">Battlefield</Text>
-        </Box>
-
-        {/* Command Zone */}
-        <Box
-          data-zone="command"
-          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
-          tabIndex={0}
-          role="region"
-          aria-label="Command zone"
-        >
-          <Text size="xs" c="dimmed">Command</Text>
-        </Box>
-
-        {/* Graveyard Zone */}
-        <Box
-          data-zone="graveyard"
-          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
-          tabIndex={0}
-          role="region"
-          aria-label="Graveyard zone"
-        >
-          <Text size="xs" c="dimmed">Graveyard</Text>
-        </Box>
-
-        {/* Exile Zone */}
-        <Box
-          data-zone="exile"
-          className="p-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 min-h-[80px] flex items-center justify-center"
-          tabIndex={0}
-          role="region"
-          aria-label="Exile zone"
-        >
-          <Text size="xs" c="dimmed">Exile</Text>
-        </Box>
+        {ZONES.map((zone) => (
+          <Box
+            key={zone.id}
+            data-zone={zone.id}
+            className={ZONE_CLASSES}
+            tabIndex={0}
+            role="region"
+            aria-label={`${zone.label} zone`}
+          >
+            <Text size="xs" c="dimmed">{zone.label}</Text>
+          </Box>
+        ))}
       </SimpleGrid>
     </Card>
   );
