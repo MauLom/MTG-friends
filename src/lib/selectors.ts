@@ -33,7 +33,7 @@ const _selectOnTurnPlayer = (state: ReturnType<typeof useGameStore.getState>): S
 
   // Find the player with this socketId
   const player = players.find(p => p.socketId === currentSocketId);
-  return player || null;
+  return player ?? null;
 };
 
 /**
@@ -71,7 +71,7 @@ const _selectPreviousTurnPlayer = (state: ReturnType<typeof useGameStore.getStat
 
   // Find the player with this socketId
   const player = players.find(p => p.socketId === previousSocketId);
-  return player || null;
+  return player ?? null;
 };
 
 /**
@@ -153,7 +153,7 @@ const _selectSelfPlayer = (state: ReturnType<typeof useGameStore.getState>): Sea
 
   // Find self in players list
   const selfPlayer = players.find(p => p.socketId === selfSocketId);
-  return selfPlayer || null;
+  return selfPlayer ?? null;
 };
 
 /**
