@@ -10,7 +10,6 @@ All interactive elements are accessible via keyboard:
 - **Tab**: Navigate forward through interactive elements
 - **Shift+Tab**: Navigate backward through interactive elements
 - **Enter/Space**: Activate buttons and links
-- **Arrow keys**: Navigate within grouped elements (future implementation)
 
 ### Skip Links
 
@@ -106,6 +105,7 @@ The application has been structured to work with screen readers:
 
 - [ ] Add live regions for game state updates
 - [ ] Implement keyboard shortcuts for common actions
+- [ ] Add arrow key navigation within grouped elements
 - [ ] Add high contrast mode toggle
 - [ ] Add reduced motion preferences support (partially implemented)
 - [ ] Implement focus trap for modals
