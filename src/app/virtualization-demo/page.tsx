@@ -18,6 +18,7 @@ import { Card } from '@/types/game';
 export default function VirtualizationDemoPage() {
   const [showCards, setShowCards] = useState(false);
   const [simulateSlowNetwork, setSimulateSlowNetwork] = useState(false);
+  const [cacheBustTimestamp, setCacheBustTimestamp] = useState(Date.now());
 
   // Sample cards with and without images
   const sampleCards: Card[] = [
@@ -25,7 +26,7 @@ export default function VirtualizationDemoPage() {
       id: 'card-1',
       name: 'Lightning Bolt',
       imageUrl: simulateSlowNetwork 
-        ? 'https://cards.scryfall.io/normal/front/a/e/ae5f9fb1-5a55-4db3-98a1-2628e3598c18.jpg?t=' + Date.now() // Cache bust
+        ? `https://cards.scryfall.io/normal/front/a/e/ae5f9fb1-5a55-4db3-98a1-2628e3598c18.jpg?t=${cacheBustTimestamp}`
         : 'https://cards.scryfall.io/normal/front/a/e/ae5f9fb1-5a55-4db3-98a1-2628e3598c18.jpg',
       manaCost: '{R}',
       type: 'Instant',
@@ -35,7 +36,7 @@ export default function VirtualizationDemoPage() {
       id: 'card-2',
       name: 'Counterspell',
       imageUrl: simulateSlowNetwork
-        ? 'https://cards.scryfall.io/normal/front/1/9/1920dae4-fb92-4f19-ae4b-eb3276b8dac7.jpg?t=' + Date.now()
+        ? `https://cards.scryfall.io/normal/front/1/9/1920dae4-fb92-4f19-ae4b-eb3276b8dac7.jpg?t=${cacheBustTimestamp}`
         : 'https://cards.scryfall.io/normal/front/1/9/1920dae4-fb92-4f19-ae4b-eb3276b8dac7.jpg',
       manaCost: '{U}{U}',
       type: 'Instant',
@@ -45,7 +46,7 @@ export default function VirtualizationDemoPage() {
       id: 'card-3',
       name: 'Giant Growth',
       imageUrl: simulateSlowNetwork
-        ? 'https://cards.scryfall.io/normal/front/0/6/06ec9e8b-4bd8-4caf-a559-6514b7ab4ca4.jpg?t=' + Date.now()
+        ? `https://cards.scryfall.io/normal/front/0/6/06ec9e8b-4bd8-4caf-a559-6514b7ab4ca4.jpg?t=${cacheBustTimestamp}`
         : 'https://cards.scryfall.io/normal/front/0/6/06ec9e8b-4bd8-4caf-a559-6514b7ab4ca4.jpg',
       manaCost: '{G}',
       type: 'Instant',
@@ -55,7 +56,7 @@ export default function VirtualizationDemoPage() {
       id: 'card-4',
       name: 'Dark Ritual',
       imageUrl: simulateSlowNetwork
-        ? 'https://cards.scryfall.io/normal/front/9/5/95f27eeb-6f14-4db3-adb9-9be5ed76b34b.jpg?t=' + Date.now()
+        ? `https://cards.scryfall.io/normal/front/9/5/95f27eeb-6f14-4db3-adb9-9be5ed76b34b.jpg?t=${cacheBustTimestamp}`
         : 'https://cards.scryfall.io/normal/front/9/5/95f27eeb-6f14-4db3-adb9-9be5ed76b34b.jpg',
       manaCost: '{B}',
       type: 'Instant',
@@ -65,7 +66,7 @@ export default function VirtualizationDemoPage() {
       id: 'card-5',
       name: 'Swords to Plowshares',
       imageUrl: simulateSlowNetwork
-        ? 'https://cards.scryfall.io/normal/front/8/0/80f46b80-0728-49bf-9d54-801eaa10b9b2.jpg?t=' + Date.now()
+        ? `https://cards.scryfall.io/normal/front/8/0/80f46b80-0728-49bf-9d54-801eaa10b9b2.jpg?t=${cacheBustTimestamp}`
         : 'https://cards.scryfall.io/normal/front/8/0/80f46b80-0728-49bf-9d54-801eaa10b9b2.jpg',
       manaCost: '{W}',
       type: 'Instant',
@@ -75,7 +76,7 @@ export default function VirtualizationDemoPage() {
       id: 'card-6',
       name: 'Brainstorm',
       imageUrl: simulateSlowNetwork
-        ? 'https://cards.scryfall.io/normal/front/0/3/0359f212-9564-41a9-870b-d2c57455a695.jpg?t=' + Date.now()
+        ? `https://cards.scryfall.io/normal/front/0/3/0359f212-9564-41a9-870b-d2c57455a695.jpg?t=${cacheBustTimestamp}`
         : 'https://cards.scryfall.io/normal/front/0/3/0359f212-9564-41a9-870b-d2c57455a695.jpg',
       manaCost: '{U}',
       type: 'Instant',
@@ -84,7 +85,8 @@ export default function VirtualizationDemoPage() {
   ];
 
   // Add more cards programmatically to test with larger lists
-  const manyCards = Array.from({ length: 20 }, (_, i) => ({
+  const DEMO_CARD_COUNT = 20;
+  const manyCards = Array.from({ length: DEMO_CARD_COUNT }, (_, i) => ({
     ...sampleCards[i % sampleCards.length],
     id: `card-${i}`,
   }));
@@ -122,8 +124,13 @@ export default function VirtualizationDemoPage() {
               </Button>
               <Button 
                 onClick={() => {
-                  setSimulateSlowNetwork(!simulateSlowNetwork);
+                  const newValue = !simulateSlowNetwork;
+                  setSimulateSlowNetwork(newValue);
                   setShowCards(false);
+                  // Update cache bust timestamp when enabling slow network
+                  if (newValue) {
+                    setCacheBustTimestamp(Date.now());
+                  }
                 }}
                 variant={simulateSlowNetwork ? "filled" : "outline"}
                 color={simulateSlowNetwork ? "orange" : "gray"}
@@ -133,7 +140,7 @@ export default function VirtualizationDemoPage() {
             </Group>
             <Text size="xs" c="dimmed">
               Toggle cards on/off to see that the layout does not shift when images load.
-              {simulateSlowNetwork && " Slow network simulation adds cache-busting to force image reload."}
+              {simulateSlowNetwork && " Slow network simulation adds cache-busting to force image reload (cards will be hidden when toggled)."}
             </Text>
           </Stack>
         </div>
@@ -184,7 +191,7 @@ export default function VirtualizationDemoPage() {
                 ))
               ) : (
                 <div className="flex items-center justify-center w-full text-white/40 text-sm">
-                  Click &quot;Show Cards&quot; to load cards
+                  Click "Show Cards" to load cards
                 </div>
               )}
             </div>
@@ -211,7 +218,7 @@ export default function VirtualizationDemoPage() {
                 ))
               ) : (
                 <div className="flex items-center justify-center w-full text-white/40 text-sm">
-                  Click &quot;Show Cards&quot; to load cards
+                  Click "Show Cards" to load cards
                 </div>
               )}
             </div>
