@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useGameStore } from '@/lib/store';
 import { Button, Input, Card } from '@/components/ui';
+import { Divider } from '@mantine/core';
 
 export default function ConnectionScreen() {
   const [playerName, setPlayerName] = useState('');
@@ -130,16 +131,17 @@ export default function ConnectionScreen() {
             {deckImporting ? 'Importing Deck...' : 'Join Game'}
           </Button>
 
-          <div className="divider my-6 relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/30"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-glass-light px-4 text-sm text-white/70 rounded-full">
-                or
-              </span>
-            </div>
-          </div>
+          <Divider 
+            label="or" 
+            labelPosition="center"
+            my="lg"
+            styles={{
+              label: {
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '0.875rem',
+              },
+            }}
+          />
 
           <Button
             onClick={handleCreateNewRoom}

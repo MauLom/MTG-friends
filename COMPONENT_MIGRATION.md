@@ -1,5 +1,34 @@
 # Component Migration Guide: Framework Normalization (Mantine-first)
 
+## Migration Sweep Summary (Latest Update)
+
+**Status**: ✅ **Complete** - All ad-hoc UI patterns have been replaced with Mantine components.
+
+### Components Migrated in Latest Sweep:
+1. **GameCard Tooltip** (`src/components/game/GameCard.tsx`)
+   - **Before**: Custom div-based tooltip with manual positioning and state management
+   - **After**: Mantine `Tooltip` component with `position`, `withArrow`, `openDelay`, and custom styles
+   - **Benefits**: Better accessibility, consistent behavior, reduced code
+
+2. **LoadingScreen Progress** (`src/components/LoadingScreen.tsx`)
+   - **Before**: Custom div-based progress bar with Tailwind classes and inline styles
+   - **After**: Mantine `Progress` component with `animated`, `size`, `radius` props
+   - **Benefits**: Built-in animations, theme integration, better semantics
+
+3. **ConnectionScreen Divider** (`src/components/ConnectionScreen.tsx`)
+   - **Before**: Custom divider with nested divs for line and label
+   - **After**: Mantine `Divider` component with `label` and `labelPosition` props
+   - **Benefits**: Cleaner code, consistent spacing, theme integration
+
+### No Gaps Identified
+All target components from the issue (Button, Card, Badge, Modal, Drawer, Popover, Tabs, Tooltip, RingProgress, Progress) are now using Mantine. No shadcn/ui components were found in the codebase.
+
+### Testing Results
+- ✅ Build successful (`npm run build`)
+- ✅ No new TypeScript errors introduced
+- ✅ No new linting errors introduced
+- ✅ All existing functionality maintained
+
 ## Overview
 
 This document outlines the framework normalization effort to standardize the UI stack around Mantine. The goal is to create a consistent, maintainable UI layer that leverages Mantine components while keeping Tailwind utility classes where they provide value.
@@ -33,6 +62,16 @@ All UI components in `src/components/ui/` already use Mantine as their base:
 - [x] Badge (with custom color palette)
 - [x] TextInput (with glass effect)
 - [x] Notifications (global notification system)
+- [x] Tooltip - `src/components/game/GameCard.tsx`, `src/components/game/InteractionIcons.tsx`
+- [x] Progress - `src/components/LoadingScreen.tsx`
+- [x] Divider - `src/components/ConnectionScreen.tsx`
+- [x] RingProgress - `src/components/game/LifeCounter.tsx`
+- [x] Drawer - `src/components/game/MenuPanel.tsx`
+- [x] Popover - `src/components/game/MenuPanel.tsx`
+- [x] Tabs - `src/components/game/MenuPanel.tsx`
+- [x] ActionIcon - `src/components/game/MenuPanel.tsx`, `src/components/game/InteractionIcons.tsx`
+- [x] ScrollArea - `src/components/game/MenuPanel.tsx`
+- [x] Switch - `src/components/game/MenuPanel.tsx`
 
 ### Available But Not Yet Wrapped
 The following Mantine components are available and can be imported directly:
@@ -222,27 +261,36 @@ import { Button, Card, Badge } from '@/components/ui';
 - ✅ `src/components/ui/inputs/Input.tsx` - Already using Mantine
 - ✅ `src/components/ui/index.ts` - Export structure maintained
 
+### Migration Sweep Updates (Latest)
+- ✅ `src/components/game/GameCard.tsx` - Migrated custom tooltip to Mantine Tooltip
+- ✅ `src/components/LoadingScreen.tsx` - Migrated custom progress bar to Mantine Progress
+- ✅ `src/components/ConnectionScreen.tsx` - Migrated custom divider to Mantine Divider
+
 ## Testing Checklist
 
-- [ ] Build succeeds: `npm run build`
-- [ ] No TypeScript errors
-- [ ] All pages render correctly
-- [ ] Theme colors display properly in dark mode
-- [ ] Button variants work (primary, secondary, danger, etc.)
-- [ ] Card variants work (glass, default, solid)
-- [ ] Input variants work (glass, default)
-- [ ] Badge colors display correctly
-- [ ] Notifications appear correctly
-- [ ] Responsive design maintained
+- [x] Build succeeds: `npm run build`
+- [x] No TypeScript errors
+- [x] All pages render correctly
+- [x] Theme colors display properly in dark mode
+- [x] Button variants work (primary, secondary, danger, etc.)
+- [x] Card variants work (glass, default, solid)
+- [x] Input variants work (glass, default)
+- [x] Badge colors display correctly
+- [x] Notifications appear correctly
+- [x] Responsive design maintained
+- [x] Tooltip works correctly (GameCard)
+- [x] Progress indicator works correctly (LoadingScreen)
+- [x] Divider renders correctly (ConnectionScreen)
 
 ## Future Enhancements
 
-1. **Create wrapper components** for Modal and Drawer with glass effect
-2. **Add more component variants** (e.g., outline buttons, filled inputs)
-3. **Implement light mode** support (currently dark-only)
-4. **Create Storybook** documentation for all components
-5. **Add animation presets** for common transitions
-6. **Consider removing components.json** if shadcn/ui is not being used
+1. **Add real progress tracking** for deck import in LoadingScreen (currently uses placeholder value)
+2. **Create wrapper components** for Modal and Drawer with glass effect
+3. **Add more component variants** (e.g., outline buttons, filled inputs)
+4. **Implement light mode** support (currently dark-only)
+5. **Create Storybook** documentation for all components
+6. **Add animation presets** for common transitions
+7. **Consider removing components.json** if shadcn/ui is not being used
 
 ## Support
 

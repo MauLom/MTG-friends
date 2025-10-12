@@ -3,6 +3,7 @@
 import { useDrag } from 'react-dnd';
 import { Card } from '@/types/game';
 import { useState } from 'react';
+import { Tooltip } from '@mantine/core';
 
 interface GameCardProps {
   card: Card;
@@ -22,7 +23,6 @@ export const CARD_DIMENSIONS = {
 
 export default function GameCard({ card, zone }: GameCardProps) {
   const [imageError, setImageError] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
   
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'card',
@@ -43,18 +43,38 @@ export default function GameCard({ card, zone }: GameCardProps) {
 
   const showImage = card.imageUrl && !imageError && !card.faceDown;
 
+  // Build tooltip content for cards with oracle text
+  const tooltipLabel = card.oracleText ? (
+    <div>
+      <div className="font-bold text-sm mb-1">{card.name}</div>
+      {card.manaCost && (
+        <div className="text-xs opacity-80 mb-1">Cost: {card.manaCost}</div>
+      )}
+      {card.type && (
+        <div className="text-xs opacity-80 mb-2">{card.type}</div>
+      )}
+      <div className="text-xs">{card.oracleText}</div>
+    </div>
+  ) : null;
+
   return (
-    <div className="relative">
-      {/* 
-        Fixed-size card container with aspect ratio box to prevent CLS
-        The explicit dimensions ensure predictable layout before and after image load
-        This structure is virtualization-ready: each card has a known, fixed height
-      */}
+    <Tooltip
+      label={tooltipLabel}
+      position="right"
+      withArrow
+      disabled={!card.oracleText || isDragging}
+      openDelay={300}
+      styles={{
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.95)',
+          border: '1px solid rgba(75, 85, 99, 0.5)',
+          maxWidth: '256px',
+        },
+      }}
+    >
       <div
         ref={drag as any}
         onDoubleClick={handleDoubleClick}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
         style={{ 
           width: `${CARD_DIMENSIONS.width}px`, 
           height: `${CARD_DIMENSIONS.height}px` 
@@ -92,20 +112,6 @@ export default function GameCard({ card, zone }: GameCardProps) {
           </div>
         )}
       </div>
-      
-      {/* Tooltip for card details */}
-      {showTooltip && !isDragging && card.oracleText && (
-        <div className="absolute z-50 bg-gray-900 text-white p-3 rounded-lg shadow-lg max-w-64 -top-2 left-full ml-2 border border-gray-600">
-          <div className="font-bold text-sm mb-1">{card.name}</div>
-          {card.manaCost && (
-            <div className="text-xs text-gray-300 mb-1">Cost: {card.manaCost}</div>
-          )}
-          {card.type && (
-            <div className="text-xs text-gray-300 mb-2">{card.type}</div>
-          )}
-          <div className="text-xs">{card.oracleText}</div>
-        </div>
-      )}
-    </div>
+    </Tooltip>
   );
 }
