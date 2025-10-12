@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ActionIcon, Tooltip, Group } from '@mantine/core';
+import { ActionIcon, Tooltip } from '@mantine/core';
 import { Button, Badge } from '@/components/ui';
 
 interface InteractionIconsProps {
@@ -70,7 +70,7 @@ export default function InteractionIcons({ className = '' }: InteractionIconsPro
           bg-black/80 backdrop-blur-md rounded-xl p-3 border border-white/20
           animate-scale-in shadow-xl
         `}>
-          <Group gap="xs" justify="center">
+          <div className="grid grid-cols-4 gap-2">
             {INTERACTION_EMOJIS.map((emoji) => (
               <Tooltip
                 key={emoji.key}
@@ -91,7 +91,7 @@ export default function InteractionIcons({ className = '' }: InteractionIconsPro
                 </ActionIcon>
               </Tooltip>
             ))}
-          </Group>
+          </div>
           
           {/* Quick Actions */}
           <div className="border-t border-white/20 mt-3 pt-2">
