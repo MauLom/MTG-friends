@@ -1,14 +1,25 @@
 'use client';
 
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+} from '@dnd-kit/core';
+import { useState } from 'react';
 import GameZone from './GameZone';
 import PlayerZone from './PlayerZone';
 import MenuPanel from './MenuPanel';
 import InteractionIcons from './InteractionIcons';
 import ActionsPanel from './panels/ActionsPanel';
+import CardNotification from './CardNotification';
 import { HudCenter } from '@/components/ui';
 import { useGameStore } from '@/lib/store';
+import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
+import { Card } from '@/types/game';
 
 export default function GameBoard() {
   const {
@@ -18,8 +29,59 @@ export default function GameBoard() {
     playerBattlefield,
     playerExile,
     players,
-    gameState
+    gameState,
+    moveCard
   } = useGameStore();
+
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts();
+
+  // Configure sensors for better touch and mouse support
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px of movement required before drag starts
+      },
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    // Basic setup - no overlay needed
+    console.log('Drag started:', event.active.id);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over, delta } = event;
+    
+    if (over) {
+      const cardId = active.id as string;
+      const targetZone = over.id as string;
+      
+      // Determine source zone
+      let sourceZone = '';
+      if (playerHand.find(card => card.id === cardId)) sourceZone = 'hand';
+      else if (playerBattlefield.find(card => card.id === cardId)) sourceZone = 'battlefield';
+      else if (playerGraveyard.find(card => card.id === cardId)) sourceZone = 'graveyard';
+      else if (playerExile.find(card => card.id === cardId)) sourceZone = 'exile';
+      
+      // Handle battlefield repositioning
+      if (sourceZone === 'battlefield' && targetZone === 'battlefield') {
+        // This is a repositioning within the battlefield
+        // We'll let the BattlefieldZone handle the position update
+        // through a custom event or callback
+        const battlefieldElement = document.querySelector('[data-zone="battlefield"]') as HTMLElement;
+        if (battlefieldElement && delta) {
+          const customEvent = new CustomEvent('repositionCard', {
+            detail: { cardId, deltaX: delta.x, deltaY: delta.y }
+          });
+          battlefieldElement.dispatchEvent(customEvent);
+        }
+      } else if (sourceZone && sourceZone !== targetZone) {
+        // This is a zone change
+        moveCard(cardId, sourceZone, targetZone);
+      }
+    }
+  };
 
   // Get opponents and current turn player
   const opponents = players.filter(p => p.name !== playerName);
@@ -40,7 +102,15 @@ export default function GameBoard() {
   const rightOpponents = opponents.slice(2, 4);
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      {/* Card draw notification */}
+      <CardNotification />
+      
       <div className="game-board h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         {/* Background pattern for tabletop feel */}
         <div className="absolute inset-0 opacity-5 pointer-events-none">
@@ -171,6 +241,6 @@ export default function GameBoard() {
 
         </div>
       </div>
-    </DndProvider>
+    </DndContext>
   );
 }

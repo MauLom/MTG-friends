@@ -174,7 +174,40 @@ export const useGameStore = create<GameStore>()(
       },
       
       moveCard: (cardId, from, to, position) => {
-        const { socket, currentRoom } = get();
+        const { socket, currentRoom, selfSocketId } = get();
+        
+        // Update local state immediately for better UX
+        const state = get();
+        const sourceZone = from === 'hand' ? 'playerHand' : 
+                          from === 'battlefield' ? 'playerBattlefield' : 
+                          from === 'graveyard' ? 'playerGraveyard' : 
+                          from === 'exile' ? 'playerExile' : null;
+                          
+        const targetZone = to === 'hand' ? 'playerHand' : 
+                          to === 'battlefield' ? 'playerBattlefield' : 
+                          to === 'graveyard' ? 'playerGraveyard' : 
+                          to === 'exile' ? 'playerExile' : null;
+        
+        if (sourceZone && targetZone) {
+          const sourceCards = state[sourceZone as keyof typeof state] as Card[];
+          const targetCards = state[targetZone as keyof typeof state] as Card[];
+          
+          const cardIndex = sourceCards.findIndex(card => card.id === cardId);
+          if (cardIndex >= 0) {
+            const card = sourceCards[cardIndex];
+            const newSourceCards = [...sourceCards];
+            newSourceCards.splice(cardIndex, 1);
+            
+            const newTargetCards = [...targetCards, card];
+            
+            set({
+              [sourceZone]: newSourceCards,
+              [targetZone]: newTargetCards
+            });
+          }
+        }
+        
+        // Send to server
         if (socket && currentRoom) {
           socket.emit('move-card', {
             roomId: currentRoom,

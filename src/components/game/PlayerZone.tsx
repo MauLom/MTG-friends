@@ -2,8 +2,9 @@
 
 import { Card } from '@/components/ui';
 import GameZone from './GameZone';
+import HandZone from './HandZone';
+import BattlefieldZone from './BattlefieldZone';
 import DeckComponent from './DeckComponent';
-import LifeCounter from './LifeCounter';
 import { Card as GameCard } from '@/types/game';
 
 interface PlayerZoneProps {
@@ -40,11 +41,10 @@ export default function PlayerZone({
         `}
       >
         <div className="flex items-center gap-3">
-          {/* Life Counter */}
-          <LifeCounter 
-            playerName={playerName}
-            className="flex-shrink-0"
-          />
+          {/* Player Name */}
+          <div className="flex-shrink-0">
+            <span className="text-sm font-semibold text-white">{playerName}</span>
+          </div>
           
           {/* Compact zones */}
           <div className="flex gap-2 flex-1">
@@ -93,10 +93,9 @@ export default function PlayerZone({
         {/* Opponent's battlefield area - if they have creatures */}
         {battlefield.length > 0 && (
           <div className="mt-2">
-            <GameZone
-              id={`${playerName}-battlefield`}
-              title="Battlefield"
+            <BattlefieldZone
               cards={battlefield}
+              playerName={playerName}
               className="min-h-16 bg-white/5"
             />
           </div>
@@ -116,55 +115,58 @@ export default function PlayerZone({
         ${className}
       `}
     >
-      <div className="grid grid-cols-[auto_1fr_auto] gap-4 items-end">
-        {/* Left side - Library and utility zones */}
-        <div className="player-zones flex gap-3">
-          <div className="deck-area text-center">
-            <h4 className="text-sm font-semibold mb-2 text-white/80">Library</h4>
-            <DeckComponent className="w-fit" />
+      <div className="grid grid-rows-[auto_1fr_160px] gap-4 h-full">
+        {/* Top row - Player info and utility zones */}
+        <div className="flex justify-between items-start">
+          {/* Left side - Library and utility zones */}
+          <div className="player-zones flex gap-3">
+            <div className="deck-area text-center">
+              <h4 className="text-sm font-semibold mb-2 text-white/80">Library</h4>
+              <DeckComponent className="w-fit" />
+            </div>
+            
+            <div className="utility-zones flex gap-2">
+              <GameZone
+                id="graveyard"
+                title="Graveyard"
+                cards={graveyard}
+                className="w-20 min-h-28 hover:shadow-lg hover:shadow-purple-500/25 transition-shadow"
+              />
+              <GameZone
+                id="exile"
+                title="Exile"
+                cards={exile}
+                className="w-20 min-h-28 hover:shadow-lg hover:shadow-orange-500/25 transition-shadow"
+              />
+            </div>
           </div>
           
-          <div className="utility-zones flex gap-2">
-            <GameZone
-              id="graveyard"
-              title="Graveyard"
-              cards={graveyard}
-              className="w-20 min-h-28 hover:shadow-lg hover:shadow-purple-500/25 transition-shadow"
-            />
-            <GameZone
-              id="exile"
-              title="Exile"
-              cards={exile}
-              className="w-20 min-h-28 hover:shadow-lg hover:shadow-orange-500/25 transition-shadow"
-            />
+          {/* Right side - Player info */}
+          <div className="player-info flex flex-col items-center gap-2">
+            <div className="text-center">
+              <div className="text-sm font-semibold text-white mb-1">{playerName}</div>
+              <div className="text-xs text-white/70">
+                Cards in hand: {hand.length}
+              </div>
+              <div className="text-xs text-white/50">
+                Library: {/* TODO: Connect to library count */}52
+              </div>
+            </div>
           </div>
         </div>
-        
-        {/* Center - Player's hand */}
-        <GameZone
-          id="hand"
-          title="Your Hand"
-          cards={hand}
-          className="min-h-32 flex-1 bg-gradient-to-t from-blue-900/20 to-blue-800/10 hover:shadow-lg hover:shadow-blue-500/25 transition-shadow"
+
+        {/* Middle row - Battlefield */}
+        <BattlefieldZone
+          cards={battlefield}
+          playerName={playerName}
+          className="flex-1"
         />
         
-        {/* Right side - Life counter and player info */}
-        <div className="player-info flex flex-col items-center gap-2">
-          <LifeCounter 
-            playerName={playerName}
-            isCurrentPlayer={isCurrentPlayer}
-          />
-          
-          {/* Additional player status */}
-          <div className="text-center">
-            <div className="text-xs text-white/70">
-              Cards in hand: {hand.length}
-            </div>
-            <div className="text-xs text-white/50">
-              Library: {/* TODO: Connect to library count */}52
-            </div>
-          </div>
-        </div>
+        {/* Bottom row - Hand as fan */}
+        <HandZone
+          cards={hand}
+          className="relative"
+        />
       </div>
     </Card>
   );

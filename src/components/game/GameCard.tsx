@@ -1,8 +1,9 @@
 'use client';
 
-import { useDrag } from 'react-dnd';
-import { Card } from '@/types/game';
 import { useState } from 'react';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
+import { Card } from '@/types/game';
 import { Tooltip } from '@mantine/core';
 
 interface GameCardProps {
@@ -19,18 +20,41 @@ export const CARD_DIMENSIONS = {
   width: 60,
   height: 84,
   aspectRatio: 60 / 84, // ~0.714 (standard MTG card aspect ratio)
+  // Hand cards are larger for better visibility
+  handWidth: 80,
+  handHeight: 112,
 } as const;
 
 export default function GameCard({ card, zone }: GameCardProps) {
   const [imageError, setImageError] = useState(false);
   
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'card',
-    item: { id: card.id, from: zone },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  }));
+  // Use larger dimensions for cards in hand
+  const isInHand = zone === 'hand';
+  const cardWidth = isInHand ? CARD_DIMENSIONS.handWidth : CARD_DIMENSIONS.width;
+  const cardHeight = isInHand ? CARD_DIMENSIONS.handHeight : CARD_DIMENSIONS.height;
+
+  // DnD Kit draggable
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging,
+  } = useDraggable({
+    id: card.id,
+    data: {
+      card,
+      zone,
+    },
+  });
+
+  // Simple style - no complex transforms or effects
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    width: `${cardWidth}px`,
+    height: `${cardHeight}px`,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
   const handleDoubleClick = () => {
     // Toggle face up/down
@@ -73,22 +97,17 @@ export default function GameCard({ card, zone }: GameCardProps) {
       }}
     >
       <div
-        ref={drag as any}
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
         onDoubleClick={handleDoubleClick}
-        style={{ 
-          width: `${CARD_DIMENSIONS.width}px`, 
-          height: `${CARD_DIMENSIONS.height}px` 
-        }}
         className={`
           card bg-gradient-to-br from-slate-600 to-slate-700 
           border-2 border-slate-500 rounded-lg cursor-pointer 
-          transition-all duration-300 relative select-none overflow-hidden
-          ${isDragging ? 
-            'opacity-50 rotate-2 scale-95' : 
-            'hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/25 hover:z-10 hover:-translate-y-2 hover:border-blue-400/50'
-          } 
+          relative select-none overflow-hidden
           ${card.faceDown ? 'bg-gradient-to-br from-amber-800 to-amber-900 border-amber-600' : ''}
-          ${!isDragging ? 'hover:ring-2 hover:ring-blue-400/30' : ''}
+          ${zone === 'hand' ? 'hover:scale-105 transition-transform' : ''}
         `}
       >
         {/* 
@@ -99,8 +118,8 @@ export default function GameCard({ card, zone }: GameCardProps) {
           <img
             src={card.imageUrl}
             alt={card.name}
-            width={CARD_DIMENSIONS.width}
-            height={CARD_DIMENSIONS.height}
+            width={cardWidth}
+            height={cardHeight}
             className="object-cover rounded-lg w-full h-full"
             onError={handleImageError}
           />

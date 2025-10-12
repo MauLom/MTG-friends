@@ -1,6 +1,6 @@
 'use client';
 
-import { useDrop } from 'react-dnd';
+import { useDroppable } from '@dnd-kit/core';
 import { useGameStore } from '@/lib/store';
 import { Card } from '@/types/game';
 import GameCard, { CARD_DIMENSIONS } from './GameCard';
@@ -30,17 +30,10 @@ const ZONE_LAYOUT = {
 export default function GameZone({ id, title, cards, className = '' }: GameZoneProps) {
   const { moveCard } = useGameStore();
 
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: 'card',
-    drop: (item: { id: string; from: string }) => {
-      if (item.from !== id) {
-        moveCard(item.id, item.from, id);
-      }
-    },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
+  // DnD Kit droppable
+  const { isOver, setNodeRef } = useDroppable({
+    id: id,
+  });
 
   // Handle scroll events with telemetry
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -54,7 +47,7 @@ export default function GameZone({ id, title, cards, className = '' }: GameZoneP
 
   return (
     <div
-      ref={drop as any}
+      ref={setNodeRef}
       className={`
         zone relative group
         bg-white/5 border-2 border-dashed border-white/20 rounded-xl p-4 

@@ -84,8 +84,15 @@ export const useSocket = () => {
 
       newSocket.on('card-moved', (data: any) => {
         // Handle card movement from other players
-        // This would update the local game state
-        console.log('Card moved:', data);
+        const { playerId, cardId, from, to } = data;
+        
+        // Only handle moves from other players, not our own
+        const currentState = useGameStore.getState();
+        if (playerId !== currentState.selfSocketId) {
+          console.log('Card moved by other player:', data);
+          // Here we would update the opponent's zones if we tracked them
+          // For now, just log it
+        }
       });
 
       newSocket.on('chat-message', (data: any) => {

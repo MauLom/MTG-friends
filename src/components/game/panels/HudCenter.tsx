@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Group, Stack, Text, RingProgress, Collapse, Tooltip } from '@mantine/core';
+import { Group, Stack, Text, RingProgress, Collapse, Tooltip, ActionIcon } from '@mantine/core';
 import { Card, Button, Badge } from '@/components/ui';
-import { ChevronDown, ChevronUp, Dices, Coins, Hash } from 'lucide-react';
+import { ChevronDown, ChevronUp, Dices, Coins, Hash, Heart, Plus, Minus } from 'lucide-react';
 import { useGameStore } from '@/lib/store';
 
 export interface HudCenterProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -25,6 +25,8 @@ const STARTING_LIFE = 40;
 export default function HudCenter({ className, ...props }: HudCenterProps) {
   const { players, gameState } = useGameStore();
   const [isDiceExpanded, setIsDiceExpanded] = useState(false);
+  const [isLifeExpanded, setIsLifeExpanded] = useState(false);
+  const [playerLifeTotals, setPlayerLifeTotals] = useState<Record<string, number>>({});
 
   // Get dynamic player colors (using a predefined set)
   const playerColors = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
@@ -32,9 +34,17 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
   // Map real players to display data
   const displayPlayers = players.map((player, index) => ({
     name: player.name,
-    life: STARTING_LIFE, // TODO: Get from actual game state
+    life: playerLifeTotals[player.name] || STARTING_LIFE,
     color: playerColors[index % playerColors.length]
   }));
+
+  // Life total management
+  const updateLifeTotal = (playerName: string, change: number) => {
+    setPlayerLifeTotals(prev => ({
+      ...prev,
+      [playerName]: Math.max(0, (prev[playerName] || STARTING_LIFE) + change)
+    }));
+  };
 
   // Get current phase and turn from game state or default
   const currentPhase: GamePhase = 'MP1'; // TODO: Get from actual game state
@@ -216,6 +226,99 @@ export default function HudCenter({ className, ...props }: HudCenterProps) {
                     </Badge>
                   </Group>
                 </div>
+                </Stack>
+              </Card>
+            </div>
+          </Collapse>
+        </div>
+
+        {/* Life Controllers Accordion */}
+        <div role="region" aria-label="Life total controllers">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setIsLifeExpanded(!isLifeExpanded)}
+            className="w-full flex items-center justify-between"
+            aria-expanded={isLifeExpanded}
+            aria-controls="life-controllers"
+          >
+            <Group gap="xs">
+              <Heart size={16} className="text-red-400" />
+              <span>Life Controllers</span>
+            </Group>
+            {isLifeExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </Button>
+
+          <Collapse in={isLifeExpanded}>
+            <div className="mt-2">
+              <Card variant="glass" padding="sm">
+                <Stack gap="md">
+                  <Text size="xs" c="dimmed">
+                    Adjust Player Life Totals
+                  </Text>
+                  
+                  {displayPlayers.map((player) => (
+                    <div key={player.name} className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-1">
+                        <div className={`w-3 h-3 rounded-full bg-${player.color}-500`}></div>
+                        <Text size="sm" className="font-medium">{player.name}</Text>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <ActionIcon
+                          variant="light"
+                          color="red"
+                          size="sm"
+                          onClick={() => updateLifeTotal(player.name, -1)}
+                          aria-label={`Decrease ${player.name}'s life by 1`}
+                        >
+                          <Minus size={12} />
+                        </ActionIcon>
+                        
+                        <Text size="sm" className="font-mono font-bold min-w-8 text-center">
+                          {player.life}
+                        </Text>
+                        
+                        <ActionIcon
+                          variant="light"
+                          color="green"
+                          size="sm"
+                          onClick={() => updateLifeTotal(player.name, 1)}
+                          aria-label={`Increase ${player.name}'s life by 1`}
+                        >
+                          <Plus size={12} />
+                        </ActionIcon>
+                      </div>
+                      
+                      <div className="flex gap-1">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => updateLifeTotal(player.name, -5)}
+                          className="text-xs"
+                        >
+                          -5
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => updateLifeTotal(player.name, 5)}
+                          className="text-xs"
+                        >
+                          +5
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => setPlayerLifeTotals({})}
+                    className="text-xs"
+                  >
+                    Reset All Life (40)
+                  </Button>
                 </Stack>
               </Card>
             </div>
