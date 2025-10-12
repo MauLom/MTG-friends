@@ -13,6 +13,8 @@ export interface ButtonProps {
   style?: React.CSSProperties;
   children: React.ReactNode;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   type?: 'button' | 'submit' | 'reset';
 }
 
@@ -47,6 +49,8 @@ export default function Button({
   style,
   children,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   type = 'button',
 }: ButtonProps) {
   const isDisabled = disabled || isLoading;
@@ -111,6 +115,8 @@ export default function Button({
       disabled={isDisabled}
       type={type}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
         'transition-all duration-300',
         variant === 'secondary' && 'backdrop-blur-sm border border-white/30',

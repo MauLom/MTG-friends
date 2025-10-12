@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Text, Center, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Card } from '@/components/ui';
+import { track, getDeviceType } from '@/lib/telemetry';
 
 export interface PreviewBoardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -42,6 +43,25 @@ export default function PreviewBoard({
   const [opened, { open, close }] = useDisclosure(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Handle expand with telemetry
+  const handleExpand = () => {
+    if (!miniature) return;
+    
+    // Generic panel expand event
+    track('ui.panel.expand', {
+      which: 'PreviewBoard',
+      device: getDeviceType(),
+    });
+    
+    // Specific preview expand event
+    track('ui.preview.expand', {
+      which: position,
+      device: getDeviceType(),
+    });
+    
+    open();
+  };
+
   // Calculate hover scale (slightly larger than miniature but not 100%)
   const hoverScale = miniature ? Math.min(scale + 0.1, 0.85) : 1;
 
@@ -69,7 +89,7 @@ export default function PreviewBoard({
         }}
         onMouseEnter={() => miniature && setIsHovered(true)}
         onMouseLeave={() => miniature && setIsHovered(false)}
-        onClick={() => miniature && open()}
+        onClick={handleExpand}
         {...props}
       >
         {content}

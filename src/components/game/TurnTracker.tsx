@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Card, Button, Badge } from '@/components/ui';
+import { track, getDeviceType } from '@/lib/telemetry';
 
 interface TurnTrackerProps {
   className?: string;
@@ -57,6 +58,12 @@ export default function TurnTracker({ className = '' }: TurnTrackerProps) {
           <Button
             key={phase.key}
             onClick={() => handlePhaseClick(phase.key)}
+            onMouseEnter={() => {
+              track('ui.turntracker.phase.hover', {
+                phase: phase.key,
+                device: getDeviceType(),
+              });
+            }}
             variant={currentPhase === phase.key ? "primary" : "secondary"}
             size="sm"
             disabled={!isMyTurn}

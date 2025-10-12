@@ -4,6 +4,7 @@ import { useDrop } from 'react-dnd';
 import { useGameStore } from '@/lib/store';
 import { Card } from '@/types/game';
 import GameCard, { CARD_DIMENSIONS } from './GameCard';
+import { track, getDeviceType } from '@/lib/telemetry';
 
 interface GameZoneProps {
   id: string;
@@ -40,6 +41,16 @@ export default function GameZone({ id, title, cards, className = '' }: GameZoneP
       isOver: !!monitor.isOver(),
     }),
   }));
+
+  // Handle scroll events with telemetry
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    track('ui.zone.scroll', {
+      zone: id,
+      scrollTop: e.currentTarget.scrollTop,
+      scrollLeft: e.currentTarget.scrollLeft,
+      device: getDeviceType(),
+    });
+  };
 
   return (
     <div
@@ -84,6 +95,7 @@ export default function GameZone({ id, title, cards, className = '' }: GameZoneP
       <div 
         className={`card-container ${id === 'hand' ? 'flex flex-nowrap gap-1 overflow-x-auto' : 'flex flex-wrap gap-2'}`}
         style={{ minHeight: `${ZONE_LAYOUT.minHeight}px` }}
+        onScroll={handleScroll}
       >
         {cards.map((card) => (
           <GameCard key={card.id} card={card} zone={id} />
