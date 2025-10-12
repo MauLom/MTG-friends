@@ -2,10 +2,18 @@
  * GameStage Component Usage Examples
  * 
  * This file demonstrates how to use the GameStage component
- * with existing game components.
+ * with existing game components and new panel shells.
  */
 
-import { GameStage } from '@/components/ui';
+import { 
+  GameStage,
+  InfoPanel,
+  OnTurnBoard,
+  ActionsPanel,
+  PreviewBoard,
+  HudCenter,
+  SelfBoard
+} from '@/components/ui';
 import TurnTracker from '@/components/game/TurnTracker';
 import MenuPanel from '@/components/game/MenuPanel';
 import InteractionIcons from '@/components/game/InteractionIcons';
@@ -81,7 +89,31 @@ export function FullGameStageExample() {
 }
 
 /**
- * Example 3: Custom Content in Each Area
+ * Example 3: Using Panel Shell Components
+ */
+export function PanelShellsExample() {
+  return (
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <GameStage
+        // Row 1: Shell components for top row
+        info={<InfoPanel />}
+        onTurn={<OnTurnBoard />}
+        actions={<ActionsPanel />}
+        
+        // Row 2: Shell components for middle row
+        prevLeft={<PreviewBoard position="left" />}
+        hudCenter={<HudCenter />}
+        prevRight={<PreviewBoard position="right" />}
+        
+        // Row 3: Shell component for bottom row
+        self={<SelfBoard />}
+      />
+    </div>
+  );
+}
+
+/**
+ * Example 4: Custom Content in Each Area
  */
 export function CustomContentExample() {
   return (
