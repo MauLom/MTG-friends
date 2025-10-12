@@ -284,12 +284,13 @@ import { Button, Card, Badge } from '@/components/ui';
 
 ## Future Enhancements
 
-1. **Create wrapper components** for Modal and Drawer with glass effect
-2. **Add more component variants** (e.g., outline buttons, filled inputs)
-3. **Implement light mode** support (currently dark-only)
-4. **Create Storybook** documentation for all components
-5. **Add animation presets** for common transitions
-6. **Consider removing components.json** if shadcn/ui is not being used
+1. **Add real progress tracking** for deck import in LoadingScreen (currently uses placeholder value)
+2. **Create wrapper components** for Modal and Drawer with glass effect
+3. **Add more component variants** (e.g., outline buttons, filled inputs)
+4. **Implement light mode** support (currently dark-only)
+5. **Create Storybook** documentation for all components
+6. **Add animation presets** for common transitions
+7. **Consider removing components.json** if shadcn/ui is not being used
 
 ## Support
 
