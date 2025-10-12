@@ -73,7 +73,8 @@ export default function LifeCounter({
   };
 
   // Calculate life percentage for RingProgress (based on starting life)
-  const lifePercentage = (life / initialLife) * 100;
+  // Handle edge case where initialLife is 0 to avoid division by zero
+  const lifePercentage = initialLife > 0 ? (life / initialLife) * 100 : 0;
   
   // Determine color based on life percentage
   const getLifeColor = () => {
@@ -118,7 +119,8 @@ export default function LifeCounter({
           thickness={sizeConfig.ringThickness}
           roundCaps
           sections={[
-            { value: Math.min(lifePercentage, 100), color: getLifeColor() }
+            // Allow ring to show over 100% when life exceeds starting life
+            { value: lifePercentage, color: getLifeColor() }
           ]}
           label={
             <div className="text-center">
