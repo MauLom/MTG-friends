@@ -305,4 +305,40 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Enhanced focus styles for accessibility */
+  *:focus-visible {
+    outline: 3px solid var(--mantine-color-primary-4, rgba(102, 126, 234, 0.8));
+    outline-offset: 2px;
+  }
+  
+  /* Ensure focus is visible on interactive elements */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid var(--mantine-color-primary-4, rgba(102, 126, 234, 0.8));
+    outline-offset: 2px;
+  }
+  
+  /* Skip to content link styles */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    z-index: 9999;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--mantine-color-primary-6);
+    color: white;
+    text-decoration: none;
+    border-radius: 0 0 0.5rem 0;
+    font-weight: 600;
+  }
+  
+  .skip-link:focus {
+    left: 0;
+    outline: 3px solid var(--mantine-color-primary-4);
+    outline-offset: 2px;
+  }
 }

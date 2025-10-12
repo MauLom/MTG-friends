@@ -3,6 +3,7 @@
 import React from 'react';
 import { Container, Grid, Box, Stack } from '@mantine/core';
 import { cn } from '@/lib/utils';
+import SkipLinks from './SkipLinks';
 
 export interface GameStageProps extends React.HTMLAttributes<HTMLDivElement> {
   // Row 1 - Top: info | onTurn | actions
@@ -36,6 +37,15 @@ export default function GameStage({
       className={cn('h-full p-4 overflow-x-hidden', className)}
       {...props}
     >
+      {/* Skip Links for Keyboard Accessibility */}
+      <SkipLinks
+        links={[
+          { id: 'hud-center', label: 'Skip to HUD' },
+          { id: 'self-board', label: 'Skip to Self' },
+          { id: 'game-controls', label: 'Skip to Controls' },
+        ]}
+      />
+      
       <style jsx>{`
         @media (max-width: 767px) {
           .game-stage-row-hud { order: 1; }
@@ -53,14 +63,23 @@ export default function GameStage({
             Tablet (640-767px): Stacked vertically
             Mobile (<640px): HudCenter first (order 1), Previews after Self (order 5-6)
         */}
-        <Box className="flex-1 min-h-0 game-stage-row-hud">
+        <Box 
+          className="flex-1 min-h-0 game-stage-row-hud"
+          component="main"
+          role="main"
+          aria-label="Game battlefield"
+        >
           <Grid gutter="md" className="h-full">
             {/* HudCenter: First on mobile (order 1), center on desktop */}
             <Grid.Col 
               span={{ base: 12, md: 4 }} 
               order={{ base: 1, md: 2 }}
             >
-              <Box className="overflow-auto h-full min-h-[44px]">
+              <Box 
+                className="overflow-auto h-full min-h-[44px]"
+                id="hud-center"
+                tabIndex={-1}
+              >
                 {hudCenter || (
                   <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full flex items-center justify-center">
                     <p className="text-white/50 text-sm text-center">HUD Center</p>
@@ -74,7 +93,12 @@ export default function GameStage({
               span={{ base: 12, md: 4 }} 
               order={{ base: 5, md: 1 }}
             >
-              <Box className="overflow-auto h-full min-h-[44px]">
+              <Box 
+                className="overflow-auto h-full min-h-[44px]"
+                component="aside"
+                role="complementary"
+                aria-label="Previous player left"
+              >
                 {prevLeft || (
                   <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full">
                     <p className="text-white/50 text-sm">Previous Player (Left)</p>
@@ -88,7 +112,12 @@ export default function GameStage({
               span={{ base: 12, md: 4 }} 
               order={{ base: 6, md: 3 }}
             >
-              <Box className="overflow-auto h-full min-h-[44px]">
+              <Box 
+                className="overflow-auto h-full min-h-[44px]"
+                component="aside"
+                role="complementary"
+                aria-label="Previous player right"
+              >
                 {prevRight || (
                   <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full">
                     <p className="text-white/50 text-sm">Previous Player (Right)</p>
@@ -104,14 +133,24 @@ export default function GameStage({
             Tablet (640-767px): 2 columns (onTurn full width, then actions|info)
             Mobile (<640px): OnTurn(2) → Actions(3) → Info(7)
         */}
-        <Box className="min-h-[80px] max-h-[120px] game-stage-row-controls">
+        <Box 
+          className="min-h-[80px] max-h-[120px] game-stage-row-controls"
+          component="nav"
+          role="navigation"
+          aria-label="Game controls"
+          id="game-controls"
+          tabIndex={-1}
+        >
           <Grid gutter="md">
             {/* OnTurn: Second on mobile (order 2), center on desktop */}
             <Grid.Col 
               span={{ base: 12, sm: 12, md: 6 }} 
               order={{ base: 2, sm: 1, md: 2 }}
             >
-              <Box className="overflow-auto h-full max-h-[120px] min-h-[44px]">
+              <Box 
+                className="overflow-auto h-full max-h-[120px] min-h-[44px]"
+                aria-label="On turn board"
+              >
                 {onTurn || (
                   <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full flex items-center justify-center">
                     <p className="text-white/50 text-sm text-center">Turn Tracker</p>
@@ -125,7 +164,10 @@ export default function GameStage({
               span={{ base: 12, sm: 6, md: 3 }} 
               order={{ base: 3, sm: 2, md: 3 }}
             >
-              <Box className="overflow-auto h-full max-h-[120px] min-h-[44px]">
+              <Box 
+                className="overflow-auto h-full max-h-[120px] min-h-[44px]"
+                aria-label="Actions menu"
+              >
                 {actions || (
                   <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full">
                     <p className="text-white/50 text-sm">Actions Panel</p>
@@ -139,7 +181,10 @@ export default function GameStage({
               span={{ base: 12, sm: 6, md: 3 }} 
               order={{ base: 7, sm: 3, md: 1 }}
             >
-              <Box className="overflow-auto h-full max-h-[120px] min-h-[44px]">
+              <Box 
+                className="overflow-auto h-full max-h-[120px] min-h-[44px]"
+                aria-label="Game log"
+              >
                 {info || (
                   <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full">
                     <p className="text-white/50 text-sm">Info Panel</p>
@@ -154,7 +199,14 @@ export default function GameStage({
             Mobile: Fourth (order 4)
         */}
         <Box className="min-h-[150px] max-h-[200px] game-stage-row-self">
-          <Box className="overflow-auto h-full min-h-[44px]">
+          <Box 
+            className="overflow-auto h-full min-h-[44px]"
+            component="section"
+            role="region"
+            aria-label="Your board"
+            id="self-board"
+            tabIndex={-1}
+          >
             {self || (
               <div className="p-4 bg-white/5 rounded-lg border border-white/10 h-full">
                 <p className="text-white/50 text-sm">Self Player Zone</p>

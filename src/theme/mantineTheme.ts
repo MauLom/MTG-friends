@@ -79,6 +79,14 @@ export const mantineTheme = createTheme({
   /** Shade index for light and dark modes */
   primaryShade: { light: 5, dark: 5 },
   
+  /** Focus ring configuration for accessibility */
+  focusRing: 'always',
+  
+  /** Custom focus ring styles */
+  focusClassName: '',
+  
+  cursorType: 'pointer',
+  
   /** Custom color palette */
   colors: {
     primary: primaryColor,
@@ -124,6 +132,10 @@ export const mantineTheme = createTheme({
       styles: {
         root: {
           transition: 'all 300ms ease',
+          '&:focus-visible': {
+            outline: '3px solid var(--mantine-color-primary-4)',
+            outlineOffset: '2px',
+          },
         },
       },
     },

@@ -8,6 +8,11 @@ export interface CardProps extends Omit<PaperProps, 'padding'> {
   variant?: 'default' | 'glass' | 'solid';
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
+  // Accessibility props
+  role?: string;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
 }
 
 const paddingMap = {
