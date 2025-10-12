@@ -15,11 +15,9 @@ export interface PreviewSides {
 }
 
 /**
- * Get the player whose turn it currently is
- * @returns The player on turn, or null if no turn is active or player not found
+ * Internal selector that takes state as parameter
  */
-export const selectOnTurnPlayer = (): SeatedPlayer => {
-  const state = useGameStore.getState();
+const _selectOnTurnPlayer = (state: ReturnType<typeof useGameStore.getState>): SeatedPlayer => {
   const { gameState, players } = state;
 
   // No game state or no current turn
@@ -39,11 +37,17 @@ export const selectOnTurnPlayer = (): SeatedPlayer => {
 };
 
 /**
- * Get the player who had the previous turn
- * @returns The previous turn player, or null if not applicable
+ * Get the player whose turn it currently is
+ * @returns The player on turn, or null if no turn is active or player not found
  */
-export const selectPreviousTurnPlayer = (): SeatedPlayer => {
-  const state = useGameStore.getState();
+export const selectOnTurnPlayer = (): SeatedPlayer => {
+  return _selectOnTurnPlayer(useGameStore.getState());
+};
+
+/**
+ * Internal selector that takes state as parameter
+ */
+const _selectPreviousTurnPlayer = (state: ReturnType<typeof useGameStore.getState>): SeatedPlayer => {
   const { gameState, players } = state;
 
   // No game state or no turn order
@@ -71,11 +75,17 @@ export const selectPreviousTurnPlayer = (): SeatedPlayer => {
 };
 
 /**
- * Get the players on the left and right sides (previous and next turn players)
- * @returns Object with left (previous turn) and right (next turn) players
+ * Get the player who had the previous turn
+ * @returns The previous turn player, or null if not applicable
  */
-export const selectPreviewSides = (): PreviewSides => {
-  const state = useGameStore.getState();
+export const selectPreviousTurnPlayer = (): SeatedPlayer => {
+  return _selectPreviousTurnPlayer(useGameStore.getState());
+};
+
+/**
+ * Internal selector that takes state as parameter
+ */
+const _selectPreviewSides = (state: ReturnType<typeof useGameStore.getState>): PreviewSides => {
   const { gameState, players } = state;
 
   // Default empty result
@@ -123,11 +133,17 @@ export const selectPreviewSides = (): PreviewSides => {
 };
 
 /**
- * Get the current player (self)
- * @returns The current player's data, or null if spectating or not connected
+ * Get the players on the left and right sides (previous and next turn players)
+ * @returns Object with left (previous turn) and right (next turn) players
  */
-export const selectSelfPlayer = (): SeatedPlayer => {
-  const state = useGameStore.getState();
+export const selectPreviewSides = (): PreviewSides => {
+  return _selectPreviewSides(useGameStore.getState());
+};
+
+/**
+ * Internal selector that takes state as parameter
+ */
+const _selectSelfPlayer = (state: ReturnType<typeof useGameStore.getState>): SeatedPlayer => {
   const { selfSocketId, players } = state;
 
   // No socket ID means spectating or not connected
@@ -141,21 +157,29 @@ export const selectSelfPlayer = (): SeatedPlayer => {
 };
 
 /**
+ * Get the current player (self)
+ * @returns The current player's data, or null if spectating or not connected
+ */
+export const selectSelfPlayer = (): SeatedPlayer => {
+  return _selectSelfPlayer(useGameStore.getState());
+};
+
+/**
  * Hook versions of the selectors for use in React components
  */
 
 export const useOnTurnPlayer = (): SeatedPlayer => {
-  return useGameStore(selectOnTurnPlayer);
+  return useGameStore(_selectOnTurnPlayer);
 };
 
 export const usePreviousTurnPlayer = (): SeatedPlayer => {
-  return useGameStore(selectPreviousTurnPlayer);
+  return useGameStore(_selectPreviousTurnPlayer);
 };
 
 export const usePreviewSides = (): PreviewSides => {
-  return useGameStore(selectPreviewSides);
+  return useGameStore(_selectPreviewSides);
 };
 
 export const useSelfPlayer = (): SeatedPlayer => {
-  return useGameStore(selectSelfPlayer);
+  return useGameStore(_selectSelfPlayer);
 };
