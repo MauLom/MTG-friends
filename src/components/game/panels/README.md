@@ -21,10 +21,19 @@ This directory contains shell components for each zone in the game layout, built
 
 ### PreviewBoard
 - **Location**: Row 2 - Sides (left and right)
-- **Purpose**: Preview opponent/player boards
+- **Purpose**: Preview opponent/player boards with miniature mode
 - **Props**: 
   - `position?: 'left' | 'right'` - Specifies which side
+  - `miniature?: boolean` - Enable miniature scaling mode (default: true)
+  - `scale?: number` - Scale percentage for miniature mode (default: 0.65 = 65%)
+  - `children?: React.ReactNode` - Custom content to display
   - `className`
+- **Features**:
+  - Miniature scaling (60-75%) using CSS transform
+  - Hover to preview at larger scale (+10%)
+  - Click/tap to expand to 100% in accessible Modal
+  - Smooth transitions with no layout shift
+  - Focus trapping in expanded view
 
 ### HudCenter
 - **Location**: Row 2 - Middle
@@ -62,6 +71,22 @@ function MyGameLayout() {
       prevRight={<PreviewBoard position="right" />}
       self={<SelfBoard />}
     />
+  );
+}
+
+// PreviewBoard with custom content and miniature mode
+function CustomPreview() {
+  return (
+    <PreviewBoard position="left" scale={0.65}>
+      <Stack gap="md" p="lg">
+        <Text size="xl" fw={700}>Opponent 1</Text>
+        <Group>
+          <Badge color="red">Life: 15</Badge>
+          <Badge color="blue">Hand: 6</Badge>
+        </Group>
+        <Text size="sm">Click to expand to full view</Text>
+      </Stack>
+    </PreviewBoard>
   );
 }
 ```
