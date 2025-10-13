@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useGameStore } from '@/lib/store';
+import { Card } from '@/types/game';
 
 export const useSocket = () => {
   const {
@@ -108,11 +109,44 @@ export const useSocket = () => {
         console.log('Deck imported:', data.deck);
         console.log('Deck cards array:', data.deck.cards);
         console.log('Number of cards:', data.deck.cards?.length || 0);
+        
+        // Set the current deck
         setCurrentDeck(data.deck);
+        
+        // Convert deck cards to Card objects and populate the library
+        const libraryCards: Card[] = [];
+        if (data.deck.cards) {
+          data.deck.cards.forEach((deckCard: any) => {
+            for (let i = 0; i < deckCard.quantity; i++) {
+              libraryCards.push({
+                id: `${deckCard.name}-${i}-${Date.now()}-${Math.random()}`,
+                name: deckCard.name,
+                imageUrl: deckCard.imageUrl,
+                manaCost: deckCard.manaCost,
+                type: deckCard.type,
+                oracleText: deckCard.oracleText,
+                faceDown: true // Library cards start face down
+              });
+            }
+          });
+        }
+        
+        // Shuffle the library
+        const shuffledLibrary = libraryCards.sort(() => Math.random() - 0.5);
+        setPlayerLibrary(shuffledLibrary);
+        
+        // Clear any existing hand first
+        setPlayerHand([]);
+        
+        // Draw initial hand of 7 cards
+        setTimeout(() => {
+          useGameStore.getState().drawInitialHand(7);
+        }, 100);
+        
         setDeckImporting(false);
         setGameReady(true);
         setCurrentScreen('game');
-        setStatusMessage(`Deck "${data.deck.name}" imported successfully! ${data.deck.cards?.length || 0} cards loaded.`, 'success');
+        setStatusMessage(`Deck "${data.deck.name}" imported successfully! ${shuffledLibrary.length} cards loaded into library.`, 'success');
       });
 
       newSocket.on('deck-import-error', (data: any) => {
@@ -121,14 +155,8 @@ export const useSocket = () => {
       });
 
       newSocket.on('card-drawn', (data: any) => {
-        const currentDeck = useGameStore.getState().currentDeck;
-        if (currentDeck) {
-          setCurrentDeck({
-            ...currentDeck,
-            remainingCards: data.remainingCards
-          });
-        }
-        setStatusMessage(`Drew "${data.card.name}" from deck`, 'success');
+        // For multiplayer sync - update other players' deck counts
+        console.log('Other player drew a card:', data);
       });
 
       newSocket.on('draw-card-error', (data: any) => {

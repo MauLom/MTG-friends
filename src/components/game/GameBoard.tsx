@@ -28,6 +28,7 @@ export default function GameBoard() {
     playerGraveyard,  
     playerBattlefield,
     playerExile,
+    playerLibrary,
     players,
     gameState,
     moveCard
@@ -94,7 +95,12 @@ export default function GameBoard() {
     hand: [], // Opponents' hands are hidden
     graveyard: [],
     exile: [],
-    battlefield: []
+    battlefield: [],
+    library: Array(60).fill(null).map((_, i) => ({ 
+      id: `mock-library-${i}`,
+      name: 'Unknown Card',
+      faceDown: true
+    }))
   };
 
   // Split opponents for left and right columns (max 2 each)
@@ -137,10 +143,11 @@ export default function GameBoard() {
                 <PlayerZone
                   playerName={currentTurnPlayer.name}
                   isOpponent={currentTurnPlayer.name !== playerName}
-                  hand={currentTurnPlayer.name === playerName ? playerHand : []} // Solo visible si es el jugador actual
-                  graveyard={currentTurnPlayer.name === playerName ? playerGraveyard : mockOpponentData.graveyard}
-                  exile={currentTurnPlayer.name === playerName ? playerExile : mockOpponentData.exile}
-                  battlefield={currentTurnPlayer.name === playerName ? playerBattlefield : mockOpponentData.battlefield} // Su tablero personal
+                  hand={playerHand}
+                  graveyard={playerGraveyard}
+                  exile={playerExile}
+                  battlefield={playerBattlefield}
+                  library={playerLibrary}
                   className="max-w-4xl mx-auto" // Larger since we have 80% width
                 />
               </div>
@@ -170,6 +177,7 @@ export default function GameBoard() {
                     graveyard={mockOpponentData.graveyard}
                     exile={mockOpponentData.exile}
                     battlefield={mockOpponentData.battlefield} // Their personal board (visible)
+                    library={mockOpponentData.library}
                     className="scale-90 origin-center" // Slightly larger than before
                   />
                 </div>
@@ -198,6 +206,7 @@ export default function GameBoard() {
                     graveyard={mockOpponentData.graveyard}
                     exile={mockOpponentData.exile}
                     battlefield={mockOpponentData.battlefield} // Their personal board (visible)
+                    library={mockOpponentData.library}
                     className="scale-90 origin-center" // Slightly larger than before
                   />
                 </div>
@@ -226,6 +235,7 @@ export default function GameBoard() {
                 graveyard={playerGraveyard}
                 exile={playerExile}
                 battlefield={playerBattlefield} // Su tablero personal donde baja cartas
+                library={playerLibrary}
                 className="w-full max-w-6xl mx-auto" // Take full advantage of the 80% width
               />
             </div>

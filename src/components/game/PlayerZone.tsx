@@ -17,6 +17,7 @@ interface PlayerZoneProps {
   graveyard: CardType[];
   exile: CardType[];
   battlefield: CardType[];
+  library: CardType[]; // Current deck/library cards
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export default function PlayerZone({
   graveyard,
   exile,
   battlefield,
+  library,
   className = ''
 }: PlayerZoneProps) {
   
@@ -99,7 +101,7 @@ export default function PlayerZone({
             <div className="text-center">
               <span className="text-xs text-white/70 block mb-1">Lib</span>
               <div className="w-8 h-12 bg-gray-600/30 rounded border border-gray-400/50 flex items-center justify-center">
-                <span className="text-xs text-gray-300">52</span>
+                <span className="text-xs text-gray-300">{library.length}</span>
               </div>
             </div>
           </div>
@@ -166,27 +168,22 @@ export default function PlayerZone({
           <div className="col-span-1 grid grid-cols-3 gap-2 items-center">
             {/* Deck with card back image */}
             <div className="text-center">
-              <span className="text-xs text-white/70 block mb-1">Deck</span>
+              <span className="text-xs text-white/70 block mb-1">Deck ({library.length})</span>
               <div 
                 ref={setDeckRef}
                 className={`
-                  relative w-12 h-16 rounded cursor-pointer transition-all duration-200
-                  ${isDeckOver ? 'scale-105 ring-2 ring-blue-400 shadow-lg shadow-blue-400/50' : 'hover:scale-105'}
+                  relative cursor-pointer transition-all duration-200
+                  ${isDeckOver ? 'scale-105 ring-2 ring-blue-400 shadow-lg shadow-blue-400/50' : ''}
                 `}
               >
-                {/* MTG Card Back */}
-                <div className="w-full h-full rounded overflow-hidden border border-gray-400/50 relative bg-gradient-to-br from-amber-800 to-amber-900">
-                  {/* Card back pattern - simplified version */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-600 to-amber-900 opacity-90"></div>
-                  <div className="absolute inset-1 rounded border border-amber-400/30"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-10 bg-gradient-to-b from-amber-300 to-amber-600 rounded-sm opacity-80 shadow-inner"></div>
-                  </div>
-                  {/* Deck count */}
-                  <div className="absolute bottom-0 right-0 bg-black/70 text-white text-xs px-1 rounded-tl text-center">
-                    <span className="font-bold">52</span>
-                  </div>
-                </div>
+                <img 
+                  src="https://backs.scryfall.io/small/2/2/222b7a3b-2321-4d4c-af19-19338b134971.jpg" 
+                  alt="Card Back" 
+                  className="w-12 h-16 rounded border-2 border-blue-400/50" 
+                  width={80} 
+                  height={110} 
+                />
+             
               </div>
             </div>
             

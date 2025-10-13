@@ -77,6 +77,8 @@ interface GameStore {
   setDeckImporting: (importing: boolean) => void;
   importDeckFromMoxfield: (deckUrl: string) => void;
   drawCardFromDeck: () => void;
+  drawInitialHand: (count?: number) => void;
+  shuffleLibrary: () => void;
   
   // Game actions
   joinRoom: (roomId: string, playerName: string) => void;
@@ -159,10 +161,73 @@ export const useGameStore = create<GameStore>()(
       },
 
       drawCardFromDeck: () => {
-        const { socket, currentRoom } = get();
-        if (socket && currentRoom) {
-          socket.emit('draw-card', { roomId: currentRoom });
+        const state = get();
+        const { socket, currentRoom, playerLibrary, playerHand } = state;
+        
+        // Check if there are cards in the library
+        if (playerLibrary.length === 0) {
+          get().setStatusMessage('No cards left in library!', 'error');
+          return;
         }
+        
+        // Take the top card from the library
+        const drawnCard = { ...playerLibrary[0] };
+        drawnCard.faceDown = false; // Reveal the card when drawn
+        
+        // Update local state immediately
+        const newLibrary = playerLibrary.slice(1);
+        const newHand = [...playerHand, drawnCard];
+        
+        set({
+          playerLibrary: newLibrary,
+          playerHand: newHand
+        });
+        
+        // Show feedback to player
+        get().setStatusMessage(`Drew "${drawnCard.name}" from deck`, 'success');
+        
+        // Send to server for multiplayer sync (if needed)
+        if (socket && currentRoom) {
+          socket.emit('draw-card', { 
+            roomId: currentRoom,
+            cardId: drawnCard.id,
+            cardName: drawnCard.name 
+          });
+        }
+      },
+      
+      drawInitialHand: (count = 7) => {
+        const state = get();
+        const { playerLibrary, playerHand } = state;
+        
+        if (playerLibrary.length < count) {
+          get().setStatusMessage(`Not enough cards in library to draw ${count} cards!`, 'error');
+          return;
+        }
+        
+        // Draw the specified number of cards
+        const drawnCards = playerLibrary.slice(0, count).map(card => ({
+          ...card,
+          faceDown: false // Reveal cards in hand
+        }));
+        
+        const newLibrary = playerLibrary.slice(count);
+        const newHand = [...playerHand, ...drawnCards];
+        
+        set({
+          playerLibrary: newLibrary,
+          playerHand: newHand
+        });
+        
+        get().setStatusMessage(`Drew initial hand of ${count} cards`, 'success');
+      },
+      
+      shuffleLibrary: () => {
+        const { playerLibrary } = get();
+        const shuffledLibrary = [...playerLibrary].sort(() => Math.random() - 0.5);
+        
+        set({ playerLibrary: shuffledLibrary });
+        get().setStatusMessage('Library shuffled', 'info');
       },
       
       // Game actions
@@ -181,12 +246,14 @@ export const useGameStore = create<GameStore>()(
         const sourceZone = from === 'hand' ? 'playerHand' : 
                           from === 'battlefield' ? 'playerBattlefield' : 
                           from === 'graveyard' ? 'playerGraveyard' : 
-                          from === 'exile' ? 'playerExile' : null;
+                          from === 'exile' ? 'playerExile' :
+                          from === 'library' ? 'playerLibrary' : null;
                           
         const targetZone = to === 'hand' ? 'playerHand' : 
                           to === 'battlefield' ? 'playerBattlefield' : 
                           to === 'graveyard' ? 'playerGraveyard' : 
-                          to === 'exile' ? 'playerExile' : null;
+                          to === 'exile' ? 'playerExile' :
+                          to === 'library' ? 'playerLibrary' : null;
         
         if (sourceZone && targetZone) {
           const sourceCards = state[sourceZone as keyof typeof state] as Card[];
@@ -194,11 +261,25 @@ export const useGameStore = create<GameStore>()(
           
           const cardIndex = sourceCards.findIndex(card => card.id === cardId);
           if (cardIndex >= 0) {
-            const card = sourceCards[cardIndex];
+            const card = { ...sourceCards[cardIndex] };
             const newSourceCards = [...sourceCards];
             newSourceCards.splice(cardIndex, 1);
             
-            const newTargetCards = [...targetCards, card];
+            // Handle library placement (top vs bottom)
+            let newTargetCards = [...targetCards];
+            if (to === 'library') {
+              card.faceDown = true; // Cards going to library are face down
+              if (position === 0) {
+                newTargetCards.unshift(card); // Add to top
+              } else {
+                newTargetCards.push(card); // Add to bottom (default)
+              }
+            } else {
+              if (from === 'library') {
+                card.faceDown = false; // Cards leaving library are revealed
+              }
+              newTargetCards.push(card); // Add to end for other zones
+            }
             
             set({
               [sourceZone]: newSourceCards,

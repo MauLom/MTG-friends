@@ -44,50 +44,6 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Mock deck data for testing when Moxfield API is not available
-function createMockDeck() {
-  const cards = [
-    {
-      name: "Lightning Bolt",
-      quantity: 4,
-      imageUrl: "https://cards.scryfall.io/normal/front/c/e/ce711943-c1a1-43a0-8b89-8d169cfb8e06.jpg",
-      manaCost: "{R}",
-      type: "Instant",
-      oracleText: "Lightning Bolt deals 3 damage to any target."
-    },
-    {
-      name: "Counterspell",
-      quantity: 4,
-      imageUrl: "https://cards.scryfall.io/normal/front/a/4/a457f404-ddf1-40fa-b0f0-23c8598533f4.jpg",
-      manaCost: "{U}{U}",
-      type: "Instant",
-      oracleText: "Counter target spell."
-    },
-    {
-      name: "Black Lotus",
-      quantity: 1,
-      imageUrl: "https://cards.scryfall.io/normal/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg",
-      manaCost: "{0}",
-      type: "Artifact",
-      oracleText: "{T}, Sacrifice Black Lotus: Add three mana of any one color."
-    },
-    {
-      name: "Serra Angel",
-      quantity: 2,
-      imageUrl: "https://cards.scryfall.io/normal/front/9/0/9067f035-3437-4c5c-bae9-d3c9001a3411.jpg",
-      manaCost: "{3}{W}{W}",
-      type: "Creature — Angel",
-      oracleText: "Flying, vigilance"
-    }
-  ];
-  
-  return {
-    name: "Test Deck with Card Images",
-    cards: cards,
-    remainingCards: cards.reduce((sum, card) => sum + card.quantity, 0),
-    drawnCards: []
-  };
-}
 
 // Moxfield integration
 async function importDeckFromMoxfield(deckUrl) {
@@ -105,7 +61,7 @@ async function importDeckFromMoxfield(deckUrl) {
       // Quick check of key properties
       console.log(`Deck: "${deckData.name}"`);
       console.log('Has boards:', !!deckData.boards);
-      console.log('Available boards:', deckData.boards ? Object.keys(deckData.boards) : 'none');
+      // console.log('Available boards:', deckData.boards ? Object.keys(deckData.boards) : 'none');
       
       if (deckData.boards) {
         if (deckData.boards.commanders) {
@@ -207,10 +163,7 @@ async function importDeckFromMoxfield(deckUrl) {
         drawnCards: []
       };
     } catch (networkError) {
-      console.warn('Moxfield API not available, using mock deck for demonstration:', networkError.message);
-      // Return mock data for demonstration when API is not available
-      const mockDeck = createMockDeck();
-      console.log(`Using mock deck with ${mockDeck.cards.length} cards`);
+      console.log('Network error fetching from Moxfield API, using mock deck instead:', networkError.message);
       return mockDeck;
     }
   } catch (error) {
